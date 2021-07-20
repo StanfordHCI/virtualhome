@@ -1,0 +1,3 @@
+CrashReporter: initialized
+Mono path[0] = '/Users/griffin/Stanford/LOA/summer/CURIS/virtualhome/simulation/macos_exec.app/Contents/Resources/Data/Managed'
+Mono config path = '/Users/griffin/Stanford/LOA/summer/CURIS/virtualhome/simulation/macos_exec.app/Contents/MonoBleedingEdge/etc'

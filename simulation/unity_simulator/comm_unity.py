@@ -100,6 +100,26 @@ class UnityCommunication(object):
         response = self.post_command(
                 {'id': str(time.time()), 'action': 'idle'}, repeat=True)
         return response['success']
+
+    # Griffin
+    def add_iot(self):
+        res = self.post_command({'id': str(time.time()), 'action': 'add_iot'})
+        return res['success']
+
+    # Gets the state of the iot sensors
+    # If they are linked this will ensure they mirror the correct state
+    # of the linked object
+    def get_iot(self):
+        res = self.post_command({'id': str(time.time()), 'action': 'get_iot'})
+        return res['success'], json.loads(res['message'])
+
+    # Links an iot sensor to an open/close or on/off capable object
+    def link_iot(self, iot_id: int, obj_id: int):
+        res = self.post_command({'id': str(time.time()),
+         'action': 'link_iot',
+         'intParams': [iot_id, obj_id]
+        })
+        return res['success']
     
     def get_visible_objects(self, camera_index):
         """
