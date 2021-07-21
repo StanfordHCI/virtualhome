@@ -120,6 +120,10 @@ class UnityCommunication(object):
          'intParams': [iot_id, obj_id]
         })
         return res['success']
+
+    def get_iot_state(self):
+        res = self.post_command({'id': str(time.time()), 'action': 'get_iot_state'})
+        return res['success'], json.loads(res['message'])
     
     def get_visible_objects(self, camera_index):
         """

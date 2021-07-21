@@ -26,4 +26,5 @@ script = [
     '<char0> [close] <microwave> ({})'.format(microwave_id)
 ]
 comm.render_script(script, recording=True, frame_rate=5,
-  image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'])
+  image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
+  image_width=300, image_height=200)

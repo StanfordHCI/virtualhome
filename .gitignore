@@ -31,6 +31,8 @@ openexrpython
 
 .idea/
 
+sequence/
+
 simulation/macos_exec.app
 
 # PyInstaller
