@@ -38,16 +38,18 @@ def cmp_file_type(name):
 def get_class_rgb_to_id_map():
   class_ids_path = "/Users/griffin/Stanford/LOA/summer/CURIS/virtualhome_unity/Assets/Resources/Data/class2rgb.txt"
   rgb_to_id = {}
+  rgb_to_class = {}
   with open(class_ids_path) as ifs:
     line_num = 0
     for line in ifs:
       start_rgb = line.find('(')
+      end_class = line.find(':')
       rgb = line[start_rgb:].strip()
       rgb_to_id[rgb] = line_num
+      rgb_to_class[rgb] = line[:end_class]
       line_num += 1
 
-  return rgb_to_id
-
+  return rgb_to_id, rgb_to_class
 
 class PointCloudDataset(Dataset):
   def __init__(self, data_dir) -> None:
@@ -56,7 +58,7 @@ class PointCloudDataset(Dataset):
     files = list(filter(filter_func, files))
     files = sorted(files, key=get_index_from_name)
     self.files = files
-    self.rgb_to_id_map = get_class_rgb_to_id_map()
+    self.rgb_to_id_map, self.rgb_to_class_map = get_class_rgb_to_id_map()
   
   def __len__(self):
     return len(self.files) // 4
@@ -114,6 +116,7 @@ class PointCloudDataset(Dataset):
                 continue
               
               class_id = self.rgb_to_id_map[rgb_encoded_id]
+              # print(class_id)
 
               instance_id = int(seg_inst_arr[row, col, 0]) + int(seg_inst_arr[row, col, 1]) + int(seg_inst_arr[row, col, 2])
 
@@ -129,23 +132,118 @@ class PointCloudDataset(Dataset):
             data_len += 1
 
           data = np.array(data)
-          print(point_cloud_arr.shape, rgb_arr.shape, seg_class_arr.shape, seg_inst_arr.shape)
-          print(data.shape)
-    return data, 1
+          # print(point_cloud_arr.shape, rgb_arr.shape, seg_class_arr.shape, seg_inst_arr.shape)
+          # print(data.shape)
+    return data
+
+
+class S3DISDataset(PointCloudDataset):
+  def __init__(self, data_dir) -> None:
+      super().__init__(data_dir)
+
+      # map from s3dis to synonymous virtual home classes
+      # TODO fill out s3dis_virtual_home_class_synonyms
+      self.s3dis_virtual_home_class_synonyms = {
+        "ceiling": [],
+        "floor": [],
+        "wall": [],
+        "beam": [],
+        "column": [],
+        "window": [],
+        "door": [],
+        "table": [],
+        "chair": [],
+        "sofa": [],
+        "bookcase": [],
+        "board": [],
+        "clutter": []
+      }
+
+      # TODO abstract these two sections into another class
+      # build map from virtual home class to s3dis class
+      self.virtual_home_to_s3dis_class = {}
+      for s3dis_class in self.s3dis_virtual_home_class_synonyms.keys():
+        for virtual_home_synonym in self.s3dis_virtual_home_class_synonyms[s3dis_class]:
+          self.virtual_home_to_s3dis_class[virtual_home_synonym] = s3dis_class
+
+      print("Virtual home to s3dis class mapping: ",self.virtual_home_to_s3dis_class)
+      self.rgb_to_id_map = {}
+      for rgb_id in self.rgb_to_class_map.keys():
+        virtual_home_class = self.rgb_to_class_map[rgb_id]
+
+        if virtual_home_class in self.virtual_home_to_s3dis_class:
+          self.rgb_to_id_map[rgb_id] = self.virtual_home_to_s3dis_class[virtual_home_class]
+        else:
+          self.rgb_to_id_map[rgb_id] = -100
+
+      # print(self.rgb_to_id_map)
+      
+
+class ScannetDataset(PointCloudDataset):
+  def __init__(self, data_dir) -> None:
+      super().__init__(data_dir)
+
+      # map from scannets classes to synonymous virtual home classes
+      # TODO fill out scannet_virtual_home_class_synonyms
+      self.scannet_virtual_home_class_synonyms = {
+        "wall": [],
+        "chair": [],
+        "floor": [],
+        "table": [],
+        "door": [],
+        "couch/sofa": [],
+        "cabinet": [],
+        "shelf": [],
+        "desk": [],
+        "(office)chair": [],
+        "bed": [],
+        # TODO fix "?"
+        "?": [],
+        "sink": [],
+        "window": [],
+        "coffee table": [],
+        "lamp": [],
+        "TV": [],
+        "nightstand": [],
+        "dresser": [],
+        "cushion": [],
+      }
+
+      self.virtual_home_to_scannet_class = {}
+      for scannet_class in self.scannet_virtual_home_class_synonyms.keys():
+        for virtual_home_synonym in self.scannet_virtual_home_class_synonyms[scannet_class]:
+          self.virtual_home_to_scannet_class[virtual_home_synonym] = scannet_class
+
+      print("Virtual home to scannet class mapping: ", self.virtual_home_to_scannet_class)
+      self.rgb_to_id_map = {}
+      for rgb_id in self.rgb_to_class_map.keys():
+        virtual_home_class = self.rgb_to_class_map[rgb_id]
+
+        if virtual_home_class in self.virtual_home_to_scannet_class:
+          self.rgb_to_id_map[rgb_id] = self.virtual_home_to_scannet_class[virtual_home_class]
+        else:
+          self.rgb_to_id_map[rgb_id] = -100
+
+      # print(self.rgb_to_id_map)
 
 
 def main():
   output_dir = '/Users/griffin/stanford/LOA/summer/CURIS/virtualhome_unity/Output/script/0'
   ds = PointCloudDataset(output_dir)
-  train_dataloader = DataLoader(ds, batch_size=16, shuffle=True)
-  train_features, train_labels = next(iter(train_dataloader))
-  print(f"Feature batch shape: {train_features.size()}")
-  print(f"Labels batch shape: {train_labels.size()}")
-  # # ds[0]
-  # for i in range(0, len(ds)):
-  #   print("loading frame {}".format(i))
-  #   ds[i]
-  # # ds[90]
+  s3dis_ds = S3DISDataset(output_dir)
+  scannet_ds = ScannetDataset(output_dir)
+
+  print(s3dis_ds[0].shape)
+  scannet_ds[0]
+
+  # train_dataloader = DataLoader(ds, batch_size=16, shuffle=True)
+  # train_features = next(iter(train_dataloader))
+  # print(f"Feature batch shape: {train_features.size()}")
+  # # # ds[0]
+  # # for i in range(0, len(ds)):
+  # #   print("loading frame {}".format(i))
+  # #   ds[i]
+  # # # ds[90]
 
 
 if __name__ == "__main__":

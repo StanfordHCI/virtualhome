@@ -18,6 +18,10 @@ from . import communication
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
+# Enum for sensor type
+OPENCLOSE = 0
+ONOFF = 1
+
 class UnityCommunication(object):
     """
     Class to communicate with the Unity simulator and generate videos or agent behaviors
@@ -114,16 +118,39 @@ class UnityCommunication(object):
         return res['success'], json.loads(res['message'])
 
     # Links an iot sensor to an open/close or on/off capable object
-    def link_iot(self, iot_id: int, obj_id: int):
+    # Sensor type can be 0 or 1. 0 for OPENCLOSE, 1 for ONOFF
+    def link_iot(self, iot_id: int, obj_id: int, sensor_type: int):
+        assert sensor_type == 0 or sensor_type == 1
+
         res = self.post_command({'id': str(time.time()),
          'action': 'link_iot',
-         'intParams': [iot_id, obj_id]
+         'intParams': [iot_id, obj_id, sensor_type]
         })
         return res['success']
 
     def get_iot_state(self):
         res = self.post_command({'id': str(time.time()), 'action': 'get_iot_state'})
-        return res['success'], json.loads(res['message'])
+        iot_states = json.loads(res['message'])
+        states = {}
+        for state in iot_states:
+            # index in linked_sensors array
+            for sensor_id, sensor in enumerate(state['linked_sensors']):
+                assert sensor == OPENCLOSE or sensor == ONOFF
+                if sensor == OPENCLOSE:
+                    if 'CLOSED' in state['states']:
+                # true for on, false for off
+                        states[sensor_id] =  True
+                    elif 'OPEN' in state['states']:
+                        states[sensor_id] =False
+                elif sensor == ONOFF:
+                    if 'ON' in state['states']:
+                        states[sensor_id] =True
+                    elif 'OFF' in state['states']:
+                        states[sensor_id] =False
+                
+
+            state['iot_states'] = states
+        return res['success'], iot_states
     
     def get_visible_objects(self, camera_index):
         """
