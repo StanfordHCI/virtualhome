@@ -35,27 +35,33 @@ s, home_capture_camera_ids = comm.home_capture_camera_ids()
 
 print("reset 0 home_capture_camera_ids:", home_capture_camera_ids)
 
-camera_modes = [ str(i) for i in home_capture_camera_ids ]
+# camera_modes = [ str(i) for i in home_capture_camera_ids ]
 
-comm.reset(1)
-comm.add_character('Chars/Female2')
+# comm.reset(1)
+# comm.add_character('Chars/Female2')
 
-s, num_cameras = comm.camera_count()
+# s, num_cameras = comm.camera_count()
 
-camera_modes = [ str(i) for i in range(num_cameras)]
+# camera_modes = [ str(i) for i in range(num_cameras)]
 
-print("reset 1 cameras:", camera_modes, num_cameras)
+# print("reset 1 cameras:", camera_modes, num_cameras)
 
-s, home_capture_camera_ids = comm.home_capture_camera_ids()
+# s, home_capture_camera_ids = comm.home_capture_camera_ids()
 
-print("reset 1 home_capture_camera_ids:", home_capture_camera_ids)
+# print("reset 1 home_capture_camera_ids:", home_capture_camera_ids)
 
-camera_modes = [ str(i) for i in home_capture_camera_ids ]
+# camera_modes = [ str(i) for i in home_capture_camera_ids ]
+import time
 
-# comm.render_script(script, recording=True, frame_rate=5,
-# image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
-# image_width=300, image_height=200, processing_time_limit=10000,
-# output_folder='Output/0', camera_mode=camera_modes)
+before = time.time()
+comm.render_script(script, recording=True, frame_rate=5,
+image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
+image_width=300, image_height=200, processing_time_limit=10000,
+output_folder='Output/0', camera_mode=camera_modes)
+after = time.time()
+diff = after - before
+print("time to complete:", diff)
+
 
 # comm.render_script(script, recording=True, frame_rate=5,
 # image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
