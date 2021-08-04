@@ -279,6 +279,11 @@ class UnityCommunication(object):
                                       'intParams': []})
         return response['success']
 
+    def home_capture_camera_ids(self):
+        response = self.post_command({'id': str(time.time()), 'action': 'home_capture_camera_ids'})
+        
+        return response['success'], json.loads(response['message'])
+
     def camera_count(self):
         """
         Returns the number of cameras in the scene, including static cameras, and cameras for each character
