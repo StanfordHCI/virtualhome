@@ -35,7 +35,7 @@ s, home_capture_camera_ids = comm.home_capture_camera_ids()
 
 print("reset 0 home_capture_camera_ids:", home_capture_camera_ids)
 
-# camera_modes = [ str(i) for i in home_capture_camera_ids ]
+camera_modes = [ str(i) for i in home_capture_camera_ids ]
 
 # comm.reset(1)
 # comm.add_character('Chars/Female2')
