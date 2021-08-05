@@ -5,7 +5,7 @@ if mode == 'auto':
     exec_file = '../simulation/macos_exec'
     comm = comm_unity.UnityCommunication(file_name=exec_file)
 else:
-    comm = comm_unity.UnityCommunication(timeout_wait=2*60)
+    comm = comm_unity.UnityCommunication(timeout_wait=5*60)
 
 comm.reset(0)
 comm.add_character('Chars/Female2')
