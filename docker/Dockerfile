@@ -77,7 +77,7 @@ RUN mkdir Data
 
 # get virtualhome - contains python api
 RUN git clone https://github.com/StanfordHCI/virtualhome.git
-WORKDIR /home/jovyan/CURIS/virtualhome/
+WORKDIR /home/jovyan/CURIS/virtualhome
 RUN python3 -m pip install -r requirements.txt
 WORKDIR /home/jovyan/CURIS
 
@@ -90,6 +90,8 @@ RUN sudo apt install unzip
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 RUN unzip awscliv2.zip
 RUN sudo ./aws/install
+
+# copy virtualhome_unity build and data
 RUN aws s3 cp --recursive s3://geniehai/jackiey/virtualhome/ .
 RUN unzip virtualhome_linux_Data.zip
 
