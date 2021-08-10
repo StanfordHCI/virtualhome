@@ -33,6 +33,8 @@ openexrpython
 
 sequence/
 
+programs_processed_precond_nograb_morepreconds/
+
 simulation/macos_exec.app
 
 # PyInstaller
