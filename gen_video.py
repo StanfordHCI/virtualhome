@@ -42,14 +42,14 @@ def main():
   graph_path = get_graph_file(action_dir, action)
   print("graph_path: {}".format(graph_path))
 
-  print("Starting Unity server...")
+  print("starting unity server...")
   mode = 'manual' # auto / manual
   if mode == 'auto':
       exec_file = '../simulation/macos_exec'
       comm = comm_unity.UnityCommunication(file_name=exec_file)
   else:
       comm = comm_unity.UnityCommunication(timeout_wait=5*60)
-  print("Unity server running")
+  print("unity server running")
 
   title, description, script = parse_exec_script_file(action_file)
   print("title={}, description={}, script={}".format(title, description, script))

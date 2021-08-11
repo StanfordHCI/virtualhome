@@ -93,7 +93,7 @@ def process_action(action, graph, env_graph):
     with open('resources/class_name_equivalence.json', 'r') as ifs:
         name_equiv = json.load(ifs)
 
-    print(name_equiv)
+    # print(name_equiv)
 
     step_pipeline = []
     for step in action:
@@ -153,7 +153,7 @@ def process_action(action, graph, env_graph):
 
             object_id = object_data['object_id']
             step_string += " <{}> ({})".format(items[0]['class_name'], items[0]['id'])
-            print(items[0])
+            # print(items[0])
             
         proc_steps.append(step_string)
     
