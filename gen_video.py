@@ -48,7 +48,7 @@ def main():
       exec_file = '../simulation/macos_exec'
       comm = comm_unity.UnityCommunication(file_name=exec_file)
   else:
-      comm = comm_unity.UnityCommunication(timeout_wait=5*60)
+      comm = comm_unity.UnityCommunication(timeout_wait=20*60)
   print("unity server running")
 
   title, description, script = parse_exec_script_file(action_file)
