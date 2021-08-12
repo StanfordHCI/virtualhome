@@ -204,7 +204,7 @@ def render_script(comm, script, init_graph, scene_num, output, character):
 
             success, message_exec = comm.render_script(script, recording=True, frame_rate=5,
             image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
-            image_width=300, image_height=200, processing_time_limit=10000,
+            image_width=600, image_height=400, processing_time_limit=10000,
             output_folder=output, camera_mode=camera_modes, find_solution=False)
             
             if success:
