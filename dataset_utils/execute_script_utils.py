@@ -147,7 +147,7 @@ def process_action(action, graph, env_graph):
         for object_data in pipeline_item['objects']:
             object_type = object_data['object_type']
 
-            items = [item for item in env_graph['nodes'] if item['class_name'] in name_equiv[object_type]]
+            items = [item for item in env_graph['nodes'] if (item['class_name'] in name_equiv[object_type] or item['class_name'] == object_type)]
             print("Found {} items of type {} in env_graph".format(len(items), object_type))
             assert len(items) > 0
 
