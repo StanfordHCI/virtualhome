@@ -24,4 +24,5 @@ print("number of files: ", len(paths))
 
 with open("all_actions.txt", 'w') as ofs:
   for path in paths:
+    path = path[path.find('/') + 1:]
     ofs.write(path + '\n')
