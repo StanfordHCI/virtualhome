@@ -67,7 +67,10 @@ def main():
   print("saving rendered result to {}".format(output))
 
   before = time.time()
-  res = render_script_from_path(comm, action_file, graph_path, output, 'Chars/Female2')
+  try:
+    res = render_script_from_path(comm, action_file, graph_path, output, 'Chars/Female2')
+  except:
+    print("exception in render_script_from_path")
   print(res)
   after = time.time()
   diff = after - before
