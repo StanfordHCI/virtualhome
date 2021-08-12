@@ -69,9 +69,9 @@ def main():
   before = time.time()
   try:
     res = render_script_from_path(comm, action_file, graph_path, output, 'Chars/Female2')
+    print(res)
   except:
     print("exception in render_script_from_path")
-  print(res)
   after = time.time()
   diff = after - before
   print("time to complete:", diff)
