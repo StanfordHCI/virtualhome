@@ -1,25 +1,60 @@
 # Generate snapshot for a program. Make sure you have the executable open
 import json
-import sys
+import sys 
 import numpy as np
 import random
 import cv2
 
-sys.path.append('../simulation')
-sys.path.append('../dataset_utils/')
+sys.path.append('./simulation')
+sys.path.append('./dataset_utils/')
 
 from tqdm import tqdm
 from unity_simulator.comm_unity import UnityCommunication
 import add_preconds
 import evolving_graph.check_programs as check_programs
+import evolving_graph.utils as utils
+import evolving_graph.scripts as scripts
+import argparse
+import os
+import re
+
+
+ENV = 1
+
+# # regular expression to get actions
+re_compiled = re.compile("^\[.+\] <[a-zA-Z_]+> \(1\)(| <[a-zA-Z_]+> \(1\))$")
+
+def read_action_file(action_file: str):
+    actions = []
+    with open(action_file, 'r') as action_ifs:
+        for line in action_ifs:
+            match = re_compiled.match(line.strip())
+            if match:
+                actions.append(match.group())
+
+    return actions
 
 # Add here your script
-script = ['[Walk] <television> (1)', '[SwitchOn] <television> (1)', 
-          '[Walk] <sofa> (1)', '[Find] <controller> (1)',
-          '[Grab] <controller> (1)']
+parser = argparse.ArgumentParser(description="Generates video sequence for a given action_dir and action")
+parser.add_argument("--action_dir", help="Directory containing actions")
+parser.add_argument("--action", help="Path from action_dir to action file")
+args = parser.parse_args()
+action = args.action
+action_dir = args.action_dir
 
+assert action
+assert action_dir
 
-cameras_ids = [1]
+action_file = os.path.join(action_dir, action)
+
+print("action_dir={}\naction={}\naction_file={}\n".format(action_dir, action, action_file))
+
+assert os.path.isdir(action_dir)
+assert os.path.isfile(action_file)
+
+# Load script from file
+script = read_action_file(action_file)
+print(script)
 
 def build_grid_images(images):
     image_steps = []
@@ -36,13 +71,13 @@ def obtain_snapshots(graph_state_list, reference_graph, comm):
     seed = random.randint(1,100)
     messages_expand, images = [], []
     for graph_state in tqdm(graph_state_list):
-        comm.reset(0)
+        comm.reset(ENV)
         comm.add_character()
 
-        message = comm.expand_scene(graph_state, randomize=True, random_seed=seed)
+        message = comm.expand_scene(graph_state, randomize=False)
         messages_expand.append(message)
         print(message)
-        _ = comm.camera_image(cameras_select, mode='rgb', image_height=480,  image_width=640)
+        # _ = comm.camera_image(cameras_select, mode='rgb', image_height=480,  image_width=640)
         ok, imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480,  image_width=640)
         images.append(imgs)
 
@@ -52,11 +87,14 @@ def obtain_snapshots(graph_state_list, reference_graph, comm):
 comm = UnityCommunication()
 
 print('Inferring preconditions...')
+# script = ['[Walk] <television> (1)', '[SwitchOn] <television> (1)', 
+#           '[Walk] <sofa> (1)', '[Find] <controller> (1)',
+#           '[Grab] <controller> (1)']
 preconds = add_preconds.get_preconds_script(script).printCondsJSON()
 print(preconds)
 
 print('Loading graph')
-comm.reset(0)
+comm.reset(ENV)
 comm.add_character()
 _, graph_input = comm.environment_graph()
 print('Executing script')
@@ -67,6 +105,7 @@ info = check_programs.check_script(
 
 message, final_state, graph_state_list, graph_dict, id_mapping, info, helper, modif_script = info
 success = (message == 'Script is executable')
+print(message)
 
 if success:
     print('Generating snapshots')

@@ -187,7 +187,9 @@ def augment_dataset(d, programs):
                             False,
                             {},
                             {})
-            except:
+                print(message)
+            except Exception as e:
+                print(e)
                 pdb.set_trace()
 
             # Convert the program

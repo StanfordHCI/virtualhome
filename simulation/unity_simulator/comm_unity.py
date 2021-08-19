@@ -387,7 +387,7 @@ class UnityCommunication(object):
 
     def render_script(self, script, randomize_execution=False, random_seed=-1, processing_time_limit=10,
                       skip_execution=False, find_solution=False, output_folder='Output/', file_name_prefix="script",
-                      frame_rate=5, image_synthesis=['normal'], save_pose_data=False,
+                      frame_rate=5, save_every_n_frames=5, image_synthesis=['normal'], save_pose_data=False,
                       image_width=640, image_height=480, recording=False,
                       save_scene_states=False, camera_mode=['AUTO'], time_scale=1.0, skip_animation=False):
         """
@@ -403,6 +403,7 @@ class UnityCommunication(object):
         :param str output_folder: folder to output renderings
         :param str file_name_prefix: prefix of created files
         :param int frame_rate: frame rate at which to generate the video
+        :param int save_every_n_frames: rate at which to save data to disk
         :param str image_synthesis: what information to save. Can be multiple at the same time. Modes are: "normal", "seg_inst", "seg_class", "depth", "flow", "albedo", "illumination", "surf_normals". Leave empty if you don't want to generate anythign
         :param bool save_pose_data: save pose data, a skeleton for every agent and frame
         :param int image_width: image_height for the generated frames
@@ -418,7 +419,7 @@ class UnityCommunication(object):
         params = {'randomize_execution': randomize_execution, 'random_seed': random_seed,
                   'processing_time_limit': processing_time_limit, 'skip_execution': skip_execution,
                   'output_folder': output_folder, 'file_name_prefix': file_name_prefix,
-                  'frame_rate': frame_rate, 'image_synthesis': image_synthesis, 
+                  'frame_rate': frame_rate, 'save_every_n_frames': save_every_n_frames, 'image_synthesis': image_synthesis, 
                   'find_solution': find_solution,
                   'save_pose_data': save_pose_data, 'save_scene_states': save_scene_states,
                   'camera_mode': camera_mode, 'recording': recording,

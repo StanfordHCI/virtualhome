@@ -202,10 +202,10 @@ def render_script(comm, script, init_graph, scene_num, output, character):
 
             print('cameras: {}'.format(camera_modes))
 
-            success, message_exec = comm.render_script(script, recording=True, frame_rate=5,
+            success, message_exec = comm.render_script(script, recording=True, frame_rate=5, save_every_n_frames=5,
             image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
             image_width=600, image_height=400, processing_time_limit=20*60,
-            output_folder=output, camera_mode=camera_modes, find_solution=False)
+            output_folder=output, camera_mode=camera_modes, find_solution=False, skip_animation=True)
             
             if success:
                 return {'success_expand': True, 'success_exec': True, 'message': (message_exec, None)}

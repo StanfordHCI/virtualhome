@@ -221,7 +221,10 @@ class FindExecutor(ActionExecutor):
             elif State.SITTING in char_node.states or State.LYING in char_node.states:
                 return _only_find_executor.execute(script, state, info, char_index, modify)
             else:
-                return _walk_find_executor.execute(script, state, info, char_index, modify)
+                # print(script, state, info, char_index, modify)
+
+                # TODO got rid of modify
+                return _walk_find_executor.execute(script, state, info, char_index)
         info.error('Could not find object {}'.format(current_obj.name))
 
 
