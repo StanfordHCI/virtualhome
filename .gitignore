@@ -26,6 +26,8 @@ wheels/
 *.egg
 MANIFEST
 
+dataset/augment_location
+
 #OpenEXR
 openexrpython
 

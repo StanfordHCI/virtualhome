@@ -175,12 +175,15 @@ def check_one_program(helper, script, precond, graph_dict, w_graph_list, modify_
         helper.set_to_default_state(graph_dict, first_room, id_checker=lambda v: v in objects_id_in_script)
 
         ## place the random objects (id from 2000)
-        if place_other_objects:
-            max_node_to_place = max_nodes - len(graph_dict["nodes"])
-            n = random.randint(max_node_to_place - 20, max_node_to_place)
-            helper.add_random_objs_graph_dict(graph_dict, n=max(n, 0))
-            helper.set_to_default_state(graph_dict, None, id_checker=lambda v: v >= 2000)
-            helper.random_change_object_state(id_mapping, graph_dict, id_checker=lambda v: v not in objects_id_in_script)
+
+        # Don't want random objects
+        # TODO removes basically every small decoration object
+        # if place_other_objects:
+        #     max_node_to_place = max_nodes - len(graph_dict["nodes"])
+        #     n = random.randint(max_node_to_place - 20, max_node_to_place)
+        #     helper.add_random_objs_graph_dict(graph_dict, n=max(n, 0))
+        #     helper.set_to_default_state(graph_dict, None, id_checker=lambda v: v >= 2000)
+        #     helper.random_change_object_state(id_mapping, graph_dict, id_checker=lambda v: v not in objects_id_in_script)
 
         ## set relation and state from precondition
         helper.check_binary(graph_dict, id_checker=lambda v: True, verbose=False)

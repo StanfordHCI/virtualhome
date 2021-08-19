@@ -19,7 +19,7 @@ import os
 import re
 
 
-ENV = 1
+ENV = 2
 
 # # regular expression to get actions
 re_compiled = re.compile("^\[.+\] <[a-zA-Z_]+> \(1\)(| <[a-zA-Z_]+> \(1\))$")
