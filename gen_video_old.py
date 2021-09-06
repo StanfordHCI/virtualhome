@@ -58,7 +58,7 @@ import time
 before = time.time()
 success, message_exec = comm.render_script(script, recording=True, frame_rate=5, save_every_n_frames=100,
             image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
-            image_width=7680, image_height=4320, processing_time_limit=20*60,
+            image_width=640, image_height=400, processing_time_limit=20*60,
             output_folder='Output/0', camera_mode=camera_modes, find_solution=False, skip_animation=True)
 after = time.time()
 diff = after - before

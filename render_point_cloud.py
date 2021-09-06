@@ -43,5 +43,6 @@ from PIL import Image
 # pcd = o3d.geometry.PointCloud()
 # pcd.points = o3d.utility.Vector3dVector(point_cloud[:, 0:6])
 
-pcd = o3d.io.read_point_cloud("./data/test_data_gen.xyzrgb")
+pcd = o3d.io.read_point_cloud("./data/point_cloud_data.xyzrgb")
+o3d.visualization
 o3d.visualization.draw(pcd)
