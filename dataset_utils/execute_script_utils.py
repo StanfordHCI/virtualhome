@@ -162,57 +162,61 @@ def process_action(action, graph, env_graph):
 # Renders a script , given a scene and initial environment
 def render_script(comm, script, init_graph, scene_num, output, character):
     comm.reset(scene_num)
-    if type(script) == list:
-        script_content = scripts.read_script_from_list_string(script)
-    else:
-        script_content = scripts.read_script_from_string(script)
+    comm.add_character()
+    print(output)
+    # if type(script) == list:
+    #     script_content = scripts.read_script_from_list_string(script)
+    # else:
+    #     script_content = scripts.read_script_from_string(script)
 
-    script_content, _ = check_programs.modify_objects_unity2script(helper, script_content)
-    success, message = comm.expand_scene(init_graph)
+    # script_content, _ = check_programs.modify_objects_unity2script(helper, script_content)
+    success, message = comm.expand_scene(init_graph, randomize=False)
+    print(message)
+
+    # objects_missing = obtain_objects_from_message(message)
+    # objects_script = [x[0].replace('_', '') for x in script_content.obtain_objects()]
+    # if type(message) != dict:
+    #     comm.reset()
+    #     return {'success_expand': False, 
+    #             'message': ('There was an error expanding the scene.', message)}
+    # else:
+        # objects_missing = obtain_objects_from_message(message)
+        # objects_script = [x[0].replace('_', '') for x in script_content.obtain_objects()]
+        # intersection_objects = list(set(objects_script).intersection(objects_missing))
+        # message_missing = 'Some objects appearing in the script were not properly initialized'
+        # if len(intersection_objects) > 0:
+        #     return {'succes_expand': False, 
+        #             'message': (message_missing, intersection_objects)}
+        # else:
+
     
-    if type(message) != dict:
-        comm.reset()
-        return {'success_expand': False, 
-                'message': ('There was an error expanding the scene.', message)}
+
+    # use custom id system
+    # s, env_graph = comm.environment_graph()
+    # script = process_action(script, init_graph, env_graph)
+
+    # render only for char0
+
+    script = [ ('<char0> ' + elem).lower() for elem in script ]
+    print("script: ", script)
+
+    s, home_capture_camera_ids = comm.home_capture_camera_ids()
+
+    camera_modes = [ str(i) for i in home_capture_camera_ids ]
+
+    print('cameras: {}'.format(camera_modes))
+
+    success, message_exec = comm.render_script(script, recording=True, frame_rate=5, save_every_n_frames=5,
+    image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
+    image_width=600, image_height=400, processing_time_limit=20*60,
+    output_folder=output, camera_mode=camera_modes, find_solution=True, skip_animation=False)
+    
+    if success:
+        return {'success_expand': True, 'success_exec': True, 'message': (message_exec, None)}
     else:
-        objects_missing = obtain_objects_from_message(message)
-        objects_script = [x[0].replace('_', '') for x in script_content.obtain_objects()]
-        intersection_objects = list(set(objects_script).intersection(objects_missing))
-        message_missing = 'Some objects appearing in the script were not properly initialized'
-        if len(intersection_objects) > 0:
-            return {'succes_expand': False, 
-                    'message': (message_missing, intersection_objects)}
-        else:
-
-            comm.add_character(character)
-            print(output)
-
-            # use custom id system
-            s, env_graph = comm.environment_graph()
-            script = process_action(script, init_graph, env_graph)
-
-            # render only for char0
-
-            script = [ ('<char0> ' + elem).lower() for elem in script ]
-            print("script: ", script)
-
-            s, home_capture_camera_ids = comm.home_capture_camera_ids()
-
-            camera_modes = [ str(i) for i in home_capture_camera_ids ]
-
-            print('cameras: {}'.format(camera_modes))
-
-            success, message_exec = comm.render_script(script, recording=True, frame_rate=5, save_every_n_frames=5,
-            image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
-            image_width=600, image_height=400, processing_time_limit=20*60,
-            output_folder=output, camera_mode=camera_modes, find_solution=False, skip_animation=True)
-            
-            if success:
-                return {'success_expand': True, 'success_exec': True, 'message': (message_exec, None)}
-            else:
-                return {'success_expand': True, 
-                        'success_exec': False, 
-                        'message': (message_exec, None)}
+        return {'success_expand': True, 
+                'success_exec': False, 
+                'message': (message_exec, None)}
 
     
 
