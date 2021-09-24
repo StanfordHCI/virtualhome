@@ -4,6 +4,7 @@ import sys
 import numpy as np
 import random
 import cv2
+import base64
 
 sys.path.append('./simulation')
 sys.path.append('./dataset_utils/')
@@ -64,24 +65,45 @@ def build_grid_images(images):
     final_image = np.concatenate(image_steps, 0)
     return final_image
 
-def obtain_snapshots(graph_state_list, reference_graph, comm):
+def obtain_snapshots(graph_state_list, reference_graph, comm, output):
     s, home_capture_camera_ids = comm.home_capture_camera_ids()
     cameras_select = [ str(i) for i in home_capture_camera_ids ][:1]
     
     seed = random.randint(1,100)
-    messages_expand, images = [], []
+
+    frame_num = 0
     for graph_state in tqdm(graph_state_list):
         comm.reset(ENV)
         comm.add_character()
 
         message = comm.expand_scene(graph_state, randomize=False)
-        messages_expand.append(message)
         print(message)
         # _ = comm.camera_image(cameras_select, mode='rgb', image_height=480,  image_width=640)
-        ok, imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480,  image_width=640)
-        images.append(imgs)
+        ok, rgb_imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480,  image_width=640)
+        ok, point_cloud_imgs = comm.camera_image(cameras_select, mode='point_cloud', image_height=480,  image_width=640)
+        ok, seg_class_imgs = comm.camera_image(cameras_select, mode='seg_class', image_height=480,  image_width=640)
+        ok, seg_inst_imgs = comm.camera_image(cameras_select, mode='seg_inst', image_height=480,  image_width=640)
 
-    return messages_expand, images
+        for i in range(len(cameras_select)):
+            with open("{}/{}-{}-rgb.png".format(output, frame_num,  i), 'wb') as ofs:
+                data = base64.b64decode(rgb_imgs[i])
+                ofs.write(data)
+
+            with open("{}/{}-{}-point_cloud.exr".format(output, frame_num,  i), 'wb') as ofs:
+                data = base64.b64decode(point_cloud_imgs[i])
+                ofs.write(data)
+
+            with open("{}/{}-{}-seg_class.png".format(output, frame_num,  i), 'wb') as ofs:
+                data = base64.b64decode(seg_class_imgs[i])
+                ofs.write(data)
+
+            with open("{}/{}-{}-seg_inst.png".format(output, frame_num,  i), 'wb') as ofs:
+                data = base64.b64decode(seg_inst_imgs[i])
+                ofs.write(data)
+        
+        frame_num += 1
+
+
 
 
 comm = UnityCommunication()
@@ -109,7 +131,12 @@ print(message)
 
 if success:
     print('Generating snapshots')
-    messages, images = obtain_snapshots(graph_state_list, graph_input, comm)
+
+    output = "Output/"
+
+    assert os.path.isdir(output)
+    
+    messages, images = obtain_snapshots(graph_state_list, graph_input, comm, output)
     grid_img = build_grid_images(images)
     cv2.imwrite('snapshot_test.png', grid_img)
     print('Snapshot saved in demo/snapshot_test.png')

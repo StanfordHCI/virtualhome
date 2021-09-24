@@ -333,7 +333,7 @@ class UnityCommunication(object):
         params = {'mode': mode, 'image_width': image_width, 'image_height': image_height}
         response = self.post_command({'id': str(time.time()), 'action': 'camera_image',
                                       'intParams': camera_indexes, 'stringParams': [json.dumps(params)]})
-        return response['success'], _decode_image_list(response['message_list'])
+        return response['success'], response['message_list']
 
     def instance_colors(self):
         """
