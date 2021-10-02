@@ -1,8 +1,5 @@
 
 import open3d as o3d
-import numpy as np
-import pandas as pd
-from PIL import Image
 
 # df_pos = pd.read_csv("./data/unity_complete_pos_data.csv", sep=',', header=None)
 
@@ -44,5 +41,6 @@ from PIL import Image
 # pcd.points = o3d.utility.Vector3dVector(point_cloud[:, 0:6])
 
 pcd = o3d.io.read_point_cloud("./data/point_cloud_data.xyzrgb")
-o3d.visualization
-o3d.visualization.draw(pcd)
+# o3d.visualization.draw(pcd)
+# Zhuoyue: the draw function doesn't work..
+o3d.visualization.draw_geometries([pcd])
