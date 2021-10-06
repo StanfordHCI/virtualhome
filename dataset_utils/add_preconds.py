@@ -4,7 +4,7 @@ import glob
 import numpy as np
 import os
 import json
-from augmentation_utils import *
+from dataset_utils.augmentation_utils import *
 
 dump_preconds = False
 rooms = [x.lower() for x in [
@@ -73,7 +73,7 @@ def get_preconds_script(script_lines):
         if len(obj_names) == 0:
             continue
         obj_id = (obj_names[0], ins_num[0])
-        if action == 'SwitchOff':
+        if action.upper() == 'SWITCHOFF':
             if obj_id not in is_on.keys(): # If this light was never switched on/off
                 precond_dict.addPrecond('is_on', obj_id, [])
                 # If it was not plugged, needs to be plugged
@@ -86,7 +86,7 @@ def get_preconds_script(script_lines):
                     raise ScriptFail('Error, object turned off twice')
             is_on[obj_id] = False
 
-        if action == 'SwitchOn':
+        if action.upper() == 'SWITCHON':
             if obj_id in is_on.keys() and is_on[obj_id]:
                 print('\n'.join(content))
                 raise ('Error, object turned on twice')
@@ -109,19 +109,19 @@ def get_preconds_script(script_lines):
     for i in range(len(content)):
         curr_block = content[i]
         action, obj_names, ins_num = parseStrBlock(curr_block)
-        if action in ['Sit', 'Lie']:
+        if action.upper() in ['SIT', 'LIE']:
             is_sitting = (obj_names[0], ins_num[0])
-        elif action in ['StandUp', 'Walk', 'Run']:
+        elif action.upper() in ['STANDUP', 'WALK', 'RUN']:
             is_sitting = None
 
         else:
             if len(obj_names) > 0:
                 obj_id = (obj_names[0], ins_num[0])
 
-            if action in ['PutBack', 'PutObjBack', 'PutIn']:
+            if action.upper() in ['PUTBACK', 'PUTOBJBACK', 'PUTIN']:
                 if obj_id in object_grabbed.keys():
                     del object_grabbed[obj_id]
-                if action in ['PutBack', 'PutIn']:
+                if action.upper() in ['PUTBACK', 'PUTIN']:
                     obj_location[obj_id] = (obj_names[1], ins_num[1])
                 else:
                     if obj_id in obj_location.keys():
@@ -133,7 +133,7 @@ def get_preconds_script(script_lines):
                 else:
                     precond_dict.addPrecond('atreach', is_sitting, [obj_id])
 
-            if action == 'Grab':
+            if action.upper() == 'GRAB':
                 object_grabbed[obj_id] = True
     # If the character's first action is standup (no sitting before), then precond is it
     is_sitting = False
@@ -144,13 +144,13 @@ def get_preconds_script(script_lines):
     for i in range(len(content)):
         curr_block = content[i]
         action, obj_names, ins_num = parseStrBlock(curr_block)
-        if action == 'Sit':
+        if action.upper() == 'SIT':
             if (not is_sitting) and (not is_lying):
                 is_sitting = True
             else:
                 raise ScriptFail('Error, character already sitting')
                 # print('\n'.join(content))
-        if action == 'Lie':
+        if action.upper() == 'LIE':
             is_lying = True
         if action.upper() in ['STANDUP', 'WAKEUP']:
             if is_sitting or is_lying:
@@ -264,7 +264,7 @@ def get_preconds_script(script_lines):
 
         # Check on which room an object could be
         if obj_names[0] in rooms: last_room = (obj_names[0], ins_num[0])
-        elif last_room is not None and action is not 'PutOff':
+        elif last_room is not None and action.upper() is not 'PUTOFF':
             precond_dict.addPrecond('location', object_id, [last_room])
         if action.upper() == 'OPEN':
             if object_id not in is_open.keys():
@@ -301,7 +301,7 @@ def get_preconds_script(script_lines):
     for i in range(len(content)):
         curr_block = content[i]
         action, obj_names, ins_num = parseStrBlock(curr_block)
-        if action in ['Walk', 'Run', 'Find', 'LookAt']:
+        if action.upper() in ['WALK', 'RUN', 'FIND', 'LOOKAT']:
             if i+1 < len(content):
                 action2, obj_names2, ins_num2 = parseStrBlock(content[i+1])
                 if len(obj_names2) > 0:
@@ -323,7 +323,7 @@ def get_preconds_script(script_lines):
                                 if obj_id[0].upper() in ['COMPUTER', 'LAPTOP']: continue
                                 if newobj[0][0].upper() in ['ARMS_BOTH', 'HAIR', 'FACE']: continue
                                 #print('SPATIAL RELATION', i, newobj, obj_id, script_name)
-        if action == 'Grab':
+        if action.upper() == 'GRAB':
             obj_id = (obj_names[0], ins_num[0])
             object_grabbed[obj_id] = True
 
@@ -334,16 +334,16 @@ def get_preconds_script(script_lines):
     for i in range(len(content)):
         curr_block = content[i]
         action, obj_names, ins_num = parseStrBlock(curr_block)
-        if action in ['Sit', 'Lie']:
+        if action.upper() in ['SIT', 'LIE']:
             is_sitting = (obj_names[0], ins_num[0])
-        elif action in ['StandUp', 'Walk', 'Run']:
+        elif action.upper() in ['STANDUP', 'WALK', 'RUN']:
             is_sitting = None
 
         else:
             if len(obj_names) > 0:
                 obj_id = (obj_names[0], ins_num[0])
 
-            if action in ['Watch']:
+            if action.upper() in ['WATCH']:
                 if is_sitting is not None:
                     precond_dict.addPrecond('facing', is_sitting, [obj_id])
 

@@ -267,6 +267,8 @@ class SitExecutor(ActionExecutor):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
+        print("heree!!!-sit")
+        print(node)
         if node is None:
             info.object_found_error()
         elif self.check_sittable(state, node, info, char_index):
@@ -307,7 +309,8 @@ class SitExecutor(ActionExecutor):
 
 class StandUpExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True,
+                in_place=False):
         info.set_current_line(script[0])
         char_node = _get_character_node(state, char_index)
         if State.SITTING in char_node.states or State.LYING in char_node.states:
@@ -315,7 +318,7 @@ class StandUpExecutor(ActionExecutor):
             new_char_node.states.discard(State.SITTING)
             new_char_node.states.discard(State.LYING)
             if modify:
-                yield state.change_state([ChangeNode(new_char_node)])
+                yield state.change_state([ChangeNode(new_char_node)], in_place=in_place) # zhuoyue, we have to have this "in_place" or we can't standup!!
             else:
                 yield state
         else:

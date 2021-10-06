@@ -7,6 +7,7 @@ import copy
 from .common import TimeMeasurement
 from .scripts import ScriptObject
 
+
 # {'bounding_box': {'center': [-3.629491, 0.9062717, -9.543596],
 #   'size': [0.220000267, 0.00999999, 0.149999619]},
 #  'category': 'Props',
@@ -87,6 +88,7 @@ class Room(Enum):
     def has_value(cls, value):
         return value.lower().replace(' ', '_') in [item.name.lower() for item in cls]
 
+
 # EnvironmentGraph, nodes, edges and related structures
 ###############################################################################
 
@@ -136,8 +138,8 @@ class GraphNode(Node):
     @staticmethod
     def from_dict(d):
         kwargs = {
-            "category": None, 
-            "prefab_name": None, 
+            "category": None,
+            "prefab_name": None,
             "bounding_box": None
         }
         for k in kwargs.keys():
@@ -147,7 +149,7 @@ class GraphNode(Node):
                 else:
                     kwargs[k] = d[k]
 
-        return GraphNode(d['id'], d['class_name'], 
+        return GraphNode(d['id'], d['class_name'],
                          {s if isinstance(s, Property) else Property[s.upper()] for s in d['properties']},
                          {State[s.upper()] for s in d['states']},
                          **kwargs)
@@ -167,19 +169,18 @@ class NodeQueryType(Enum):
 
 
 def _ensure_unique_nodes_unique_edges(graph_dict):
-    
     nodes = graph_dict["nodes"]
     edges = graph_dict["edges"]
-    
+
     new_nodes = {node["id"]: node for node in nodes}
     new_nodes = list(new_nodes.values())
 
     new_edges = {"{}.{}.{}".format(edge["from_id"], edge["relation_type"], edge["to_id"]): edge for edge in edges}
     new_edges = list(new_edges.values())
-    
+
     return {"nodes": new_nodes, "edges": new_edges}
 
-        
+
 class EnvironmentGraph(object):
 
     def __init__(self, dictionary=None):
@@ -210,7 +211,7 @@ class EnvironmentGraph(object):
         return self._node_map.values()
 
     def get_node_ids(self):
-        return  self._node_map.keys()
+        return self._node_map.keys()
 
     def get_node_map(self):
         return self._node_map
@@ -226,10 +227,10 @@ class EnvironmentGraph(object):
 
     def get_char_node(self, char_index: int):
         chars = self._class_name_map.get('character', [])
-        chars.sort(key=lambda node : node.id)
-        assert char_index < len(chars), 'Character Index Out of bound! #chars is {}, char index is {}'.format(len(chars), char_index)
+        chars.sort(key=lambda node: node.id)
+        assert char_index < len(chars), 'Character Index Out of bound! #chars is {}, char index is {}'.format(
+            len(chars), char_index)
         yield chars[char_index]
-        
 
     def get_node(self, node_id: int):
         return self._node_map.get(node_id, None)
@@ -271,7 +272,7 @@ class EnvironmentGraph(object):
 
 class EnvironmentState(object):
 
-    def __init__(self, graph: EnvironmentGraph, name_equivalence, instance_selection: bool=False):
+    def __init__(self, graph: EnvironmentGraph, name_equivalence, instance_selection: bool = False):
         self.instance_selection = instance_selection
         self.executor_data = {}
         self._graph = graph
@@ -399,14 +400,22 @@ class EnvironmentState(object):
         node.id = self._max_node_id
         self._new_nodes[node.id] = node
 
-    def change_state(self, changers: List['StateChanger'], node: Node = None, obj: ScriptObject = None):
+    def change_state(self, changers: List['StateChanger'], node: Node = None, obj: ScriptObject = None, in_place=False):
 
         new_state = EnvironmentState(self._graph, self._name_equivalence, self.instance_selection)
-        new_state._new_nodes = copy.deepcopy(self._new_nodes)
-        new_state._removed_edges_from = copy.deepcopy(self._removed_edges_from)
-        new_state._new_edges_from = copy.deepcopy(self._new_edges_from)
-        new_state._script_objects = copy.deepcopy(self._script_objects)
-        new_state.executor_data = copy.deepcopy(self.executor_data)
+        if in_place:
+            new_state._new_nodes = self._new_nodes
+            new_state._removed_edges_from = self._removed_edges_from
+            new_state._new_edges_from = self._new_edges_from
+            new_state._script_objects = self._script_objects
+            new_state.executor_data = self.executor_data
+        else:
+            new_state._new_nodes = copy.deepcopy(self._new_nodes)
+            new_state._removed_edges_from = copy.deepcopy(self._removed_edges_from)
+            new_state._new_edges_from = copy.deepcopy(self._new_edges_from)
+            new_state._script_objects = copy.deepcopy(self._script_objects)
+            new_state.executor_data = copy.deepcopy(self.executor_data)
+
         if obj is not None and node is not None:
             new_state._script_objects[(obj.name, obj.instance)] = node.id
         new_state.apply_changes(changers)
@@ -487,6 +496,7 @@ class ClassNameNode(NodeEnumerator):
     def enumerate(self, state: EnvironmentState, **kwargs):
         return state.get_nodes_by_attr('class_name', self.class_name)
 
+
 class ObjectInsideNode(NodeEnumerator):
 
     def __init__(self, node: Node):
@@ -494,8 +504,10 @@ class ObjectInsideNode(NodeEnumerator):
 
     def enumerate(self, state: EnvironmentState, **kwargs):
         for n in state.get_nodes():
-            if state.evaluate(ExistsRelation(NodeInstance(n), Relation.INSIDE, NodeInstanceFilter(self.container_node))):
-                 yield n
+            if state.evaluate(
+                    ExistsRelation(NodeInstance(n), Relation.INSIDE, NodeInstanceFilter(self.container_node))):
+                yield n
+
 
 class ObjectOnNode(NodeEnumerator):
 
@@ -505,7 +517,7 @@ class ObjectOnNode(NodeEnumerator):
     def enumerate(self, state: EnvironmentState, **kwargs):
         for n in state.get_nodes():
             if state.evaluate(ExistsRelation(NodeInstance(n), Relation.ON, NodeInstanceFilter(self.surface_node))):
-                 yield n
+                yield n
 
 
 class BodyNode(NodeEnumerator):
@@ -519,6 +531,7 @@ class BodyNode(NodeEnumerator):
 class SurfaceObjectNode(NodeEnumerator):
     """Find the objects that support `node`
     """
+
     def __init__(self, node: Node):
         self.node = node
 
@@ -526,9 +539,11 @@ class SurfaceObjectNode(NodeEnumerator):
         for n in state.get_nodes_from(self.node, Relation.ON):
             yield n
 
+
 class BoxObjectNode(NodeEnumerator):
     """Find the objects that contain `node`
     """
+
     def __init__(self, node: Node):
         self.node = node
 
@@ -687,7 +702,7 @@ class ExistRelations(LogicalValue):
 
 class IsRoomNode(LogicalValue):
 
-    def __init__(self, room_name: str=None):
+    def __init__(self, room_name: str = None):
         self.room_name = room_name
 
     def evaluate(self, node: GraphNode, **kwargs):

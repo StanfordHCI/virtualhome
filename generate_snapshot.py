@@ -1,29 +1,22 @@
 # Generate snapshot for a program. Make sure you have the executable open
 import json
-import sys
 import numpy as np
-import random
-import cv2
 import base64
-
-sys.path.append('./simulation')
-sys.path.append('./dataset_utils/')
-
-from tqdm import tqdm
-from unity_simulator.comm_unity import UnityCommunication
-import add_preconds
-import evolving_graph.check_programs as check_programs
-import evolving_graph.utils as utils
-import evolving_graph.scripts as scripts
 import argparse
 import os
 import re
 
+from tqdm import tqdm
+from simulation.unity_simulator.comm_unity import UnityCommunication
+import simulation.evolving_graph.check_programs as check_programs
+import dataset_utils.add_preconds as add_preconds
+
 ENV = 2
 
-# # regular expression to get actions
-re_compiled = re.compile("^\[.+\] <[a-zA-Z_]+> \(\d+\)(| <[a-zA-Z_]+> \(\d+\))$") # zhuoyue: we should match all kinds of ids, not just 1s.
-# re_compiled = re.compile("^\[.+\] <[a-zA-Z_]+> \(1\)(| <[a-zA-Z_]+> \(1\))$")
+# regular expression to get actions
+# zhuoyue: we should match all kinds of ids, not just 1s.
+# also, Griffin's original regular expression prevent things like "standup", so I add the `|\[.+\]`
+re_compiled = re.compile("^\[.+\] <[a-zA-Z_]+> \(\d+\)|( <[a-zA-Z_]+> \(\d+\)) |\[.+\]$")
 
 
 def read_action_file(action_file: str):
@@ -69,43 +62,56 @@ def build_grid_images(images):
     return final_image
 
 
-def obtain_snapshots(graph_state_list, reference_graph, comm, output):
-    s, home_capture_camera_ids = comm.home_capture_camera_ids()
-    cameras_select = [str(i) for i in home_capture_camera_ids][:1]
+def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=1, num_char_cameras=2):
+    s, scene_camera_ids = comm.home_capture_camera_ids()
+    cameras_select = [str(i) for i in scene_camera_ids][:num_scene_cameras]
+    # s, char_camera_ids = comm.character_cameras()
 
-    seed = random.randint(1, 100)
+    # because the ids of char cameras starts from 20 (there are 20 scene cameras, 8 character cameras)
+    # cameras_select.extend([str(i + len(scene_camera_ids)) for i in range(num_char_cameras)])
+    # only show the first camera (id: 0) and the one mounted on the person ( id:28 the 29th camera)
+    # cameras_select = ['0', '28']
+    cameras_select = ['0']
+    print(cameras_select)
 
     frame_num = 0
-    comm.reset(ENV)
-    comm.add_character()
-    for graph_state in tqdm(graph_state_list): # tqdm is progress bar
+    # for i in range(2):
+    for graph_state in tqdm(graph_state_list):  # tqdm is progress bar
+        # the following doesn't help with the weird location issue
+        # graph_state['nodes'] = sorted(graph_state['nodes'], key=lambda i: i["id"])
+        # if graph_state['nodes'][0]['id'] == 163:
+        #     graph_state['nodes'][0]['states'] = ["CLEAN", "PLUGGED_IN", "CLOSED"]
+
+        with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
+            json.dump(graph_state, file_obj)
+
+        # f = open("{}/{}.json".format(output, i),)
+        # graph_state = json.load(f)
         message = comm.expand_scene(graph_state, randomize=False)
         print(message)
-        new_data = []
 
-
-        # Save iot raw data directly in JSON
+        ## Save iot raw data directly in JSON
         # with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
-        #     json.dump( graph_state["nodes"], file_obj)
+        #     json.dump(graph_state["nodes"], file_obj)
 
-
-        # cleaning the data such that we only leave the ids and states (for binary IoT), sorted by id
-        for data_entry in graph_state["nodes"]:
-            local_new = {}
-            local_states = data_entry["states"] # tracking binary for now
-            if "ON" in local_states or "OPEN" in local_states:
-                local_new["id"] = data_entry["id"]
-                local_new["state"] = 1
-                local_new["class_name"] = data_entry["class_name"]
-                new_data.append(local_new)
-            elif "OFF" in local_states or "CLOSED" in local_states:
-                local_new["id"] = data_entry["id"]
-                local_new["state"] = 0
-                local_new["class_name"] = data_entry["class_name"]
-                new_data.append(local_new)
-        sorted_new_data = sorted(new_data, key = lambda i: i["id"])
-        with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
-            json.dump(sorted_new_data, file_obj)
+        # new_data = []
+        # # cleaning the data such that we only leave the ids and states (for binary IoT), sorted by id
+        # for data_entry in graph_state["nodes"]:
+        #     local_new = {}
+        #     local_states = data_entry["states"]  # tracking binary for now
+        #     if "ON" in local_states or "OPEN" in local_states:
+        #         local_new["id"] = data_entry["id"]
+        #         local_new["state"] = 1
+        #         local_new["class_name"] = data_entry["class_name"]
+        #         new_data.append(local_new)
+        #     elif "OFF" in local_states or "CLOSED" in local_states:
+        #         local_new["id"] = data_entry["id"]
+        #         local_new["state"] = 0
+        #         local_new["class_name"] = data_entry["class_name"]
+        #         new_data.append(local_new)
+        # sorted_new_data = sorted(new_data, key=lambda i: i["id"])
+        # with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
+        #     json.dump(sorted_new_data, file_obj)
 
         _, rgb_imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480, image_width=640)
         # _, point_cloud_imgs = comm.camera_image(cameras_select, mode='point_cloud', image_height=480, image_width=640)
@@ -137,39 +143,41 @@ def obtain_snapshots(graph_state_list, reference_graph, comm, output):
 comm = UnityCommunication()
 
 print('Inferring preconditions...')
-# script = ['[Walk] <television> (1)', '[SwitchOn] <television> (1)', 
-#           '[Walk] <sofa> (1)', '[Find] <controller> (1)',
-#           '[Grab] <controller> (1)']
 preconds = add_preconds.get_preconds_script(script).printCondsJSON()
 print(preconds)
 
 print('Loading graph')
 comm.reset(ENV)
+comm.add_character_camera()
 comm.add_character()
 _, graph_input = comm.environment_graph()
 print('Executing script')
 print(script)
 graph_input = check_programs.translate_graph_dict_nofile(graph_input)
 
-# print('Checking graph_input')
-# print(graph_input)
-
-info = check_programs.check_script(
+message, final_state, graph_state_list, graph_dict, id_mapping, info, helper, modif_script = check_programs.check_script(
     script, preconds, graph_path=None, inp_graph_dict=graph_input)
 
-message, final_state, graph_state_list, graph_dict, id_mapping, info, helper, modif_script = info
-success = (message == 'Script is executable')
-print(message)
+# zhuoeyue: graph_state_list is basically a list of nodes, each node is a list of states, which has been looped
+# in the `for graph_state in tqdm(graph_state_list)`
 
-if success:
+if message == 'Script is executable':
     print('Generating snapshots')
     output = "Output/"
     if not os.path.isdir(output):
         os.mkdir(output)
-
-    obtain_snapshots(graph_state_list, graph_input, comm, output)
-    # zhuoyue: the `obtain_snapshots` does not have reture statement, so I guess we don't need the followings?
-    # messages, images = obtain_snapshots(graph_state_list, graph_input, comm, output)
-    # grid_img = build_grid_images(images)
-    # cv2.imwrite('snapshot_test_zy.png', grid_img)
-    # print('Snapshot saved in demo/snapshot_test.png')
+    # the last two argument is about the number of cameras for scene (static) and character (moving with the person)
+    # scene cameras (20 in total): [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+    # character cameras (8 in total): ["PERSON_FRONT","PERSON_TOP","FIRST_PERSON","PERSON_FROM_BACK","PERSON_FROM_LEFT","PERSON_RIGHT","PERSON_LEFT","PERSON_BACK"]
+    # if you do the `comm.add_character_camera()` before, there will be another "new_camera" at the end of the list
+    obtain_snapshots(graph_state_list, comm, output)
+else:
+    print("Not executable!!!")
+    # # load json
+    # for i in range(4):
+    #     f = open("{}/{}.json".format(output, i),)
+    #     data = json.load(f)
+    #     # with open("{}/{}.json".format(output, i), 'r') as file_obj:  # open the file in write mode
+    #     #     gg = json.load(file_obj)
+    #     message = comm.expand_scene(data, randomize=False)
+    #     print(message)

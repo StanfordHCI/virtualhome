@@ -294,10 +294,11 @@ class UnityCommunication(object):
         """
         Returns the number of cameras in the scene
 
-        :return: pair success (bool), camera_names: (list): the names of the cameras defined fo rthe characters
+        :return: pair success (bool), camera_names: (list): the names of the cameras defined for the characters
         """
         response = self.post_command({'id': str(time.time()), 'action': 'character_cameras'})
-        return response['success'], response['message']
+        # json.loads would convert the returned string representation of a list into the actual list
+        return response['success'], json.loads(response['message'])
 
     def camera_data(self, camera_indexes):
         """
@@ -350,10 +351,12 @@ class UnityCommunication(object):
         response = self.post_command({'id': str(time.time()), 'action': 'environment_graph'})
         return response['success'], json.loads(response['message'])
 
-    def expand_scene(self, new_graph, randomize=False, random_seed=-1, animate_character=False,
+    def expand_scene(self, new_graph, randomize=False, random_seed=236, animate_character=False,
                      ignore_placing_obstacles=False, prefabs_map=None, transfer_transform=True):
         """
-        Expands scene with the given graph. Given a starting scene without characters, it updates the scene according to new_graph, which contains a modified description of the scene. Can be used to add, move, or remove objects or change their state or size.
+        Expands scene with the given graph. Given a starting scene without characters, it updates the scene according to
+        new_graph, which contains a modified description of the scene.
+        Can be used to add, move, or remove objects or change their state or size.
 
         :param dict new_graph: a dictionary corresponding to the new graph of the form `{'nodes': ..., 'edges': ...}`
         :param int bool randomize: a boolean indicating if the new positioni/types of objects should be random
@@ -367,7 +370,7 @@ class UnityCommunication(object):
         config = {'randomize': randomize, 'random_seed': random_seed, 'animate_character': animate_character,
                   'ignore_obstacles': ignore_placing_obstacles, 'transfer_transform': transfer_transform}
         string_params = [json.dumps(config), json.dumps(new_graph)]
-        int_params = [int(randomize), random_seed]
+        # int_params = [int(randomize), random_seed]
         if prefabs_map is not None:
             string_params.append(json.dumps(prefabs_map))
         response = self.post_command({'id': str(time.time()), 'action': 'expand_scene',
