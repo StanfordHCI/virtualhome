@@ -1,0 +1,18 @@
+Test Jackie's script
+
+
+[Walk] <kitchen> (1)
+[Walk] <lightswitch> (1)
+[Find] <lightswitch> (1)
+[SwitchOn] <lightswitch> (1)
+[Walk] <living_room> (1)
+[Walk] <sofa> (1)
+[Find] <sofa> (1)
+[Sit] <sofa> (1)
+[Walk] <kitchen> (1)
+[Walk] <lightswitch> (1)
+[Find] <lightswitch> (1)
+[Walk] <living_room> (1)
+[Walk] <lightswitch> (1)
+[Find] <lightswitch> (1)
+[SwitchOff] <lightswitch> (1)

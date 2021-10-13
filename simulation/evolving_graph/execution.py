@@ -77,36 +77,39 @@ class WalkExecutor(ActionExecutor):
         info.set_current_line(current_line)
         current_obj = current_line.object()
 
-        #print("in walk execution, char_index = {}".format(char_index))
+        # print("in walk execution, char_index = {}".format(char_index))
 
         # select objects based on current_obj
         for node in state.select_nodes(current_obj):
             node_room = _get_room_node(state, node)
-            #print(state, node)
+            # print(state, node)
             if self.check_walk(state, node, info, char_index) and node_room is not None:
 
                 changes = [DeleteEdges(CharacterNode(char_index),
                                        [Relation.INSIDE, Relation.CLOSE, Relation.FACING],
                                        AnyNode(), delete_reverse=True),
                            AddEdges(CharacterNode(char_index), Relation.INSIDE, NodeInstance(node_room)),
-                     ]
+                           ]
 
                 if node_room != node:
                     changes += [
-                           AddEdges(CharacterNode(char_index), Relation.CLOSE, BoxObjectNode(node), add_reverse=True),
-                           AddEdges(CharacterNode(char_index), Relation.CLOSE, BodyNode(), add_reverse=True),
-                           AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node), add_reverse=True)
-                     ]
+                        AddEdges(CharacterNode(char_index), Relation.CLOSE, BoxObjectNode(node), add_reverse=True),
+                        AddEdges(CharacterNode(char_index), Relation.CLOSE, BodyNode(), add_reverse=True),
+                        AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node), add_reverse=True)
+                    ]
 
                 # close to object in hands
                 char_node = _get_character_node(state, char_index)
                 char_room = _get_room_node(state, char_node)
                 nodes_in_hands = _find_nodes_from(state, char_node, relations=[Relation.HOLDS_LH, Relation.HOLDS_RH])
                 for node_in_hands in nodes_in_hands:
-                    changes.append(DeleteEdges(NodeInstance(node_in_hands), [Relation.INSIDE, Relation.CLOSE, Relation.FACING], AnyNode(), delete_reverse=True))
+                    changes.append(
+                        DeleteEdges(NodeInstance(node_in_hands), [Relation.INSIDE, Relation.CLOSE, Relation.FACING],
+                                    AnyNode(), delete_reverse=True))
 
                 for node_in_hands in nodes_in_hands:
-                    changes.append(AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node_in_hands), add_reverse=True))
+                    changes.append(AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node_in_hands),
+                                            add_reverse=True))
                     changes.append(AddEdges(NodeInstance(node_in_hands), Relation.INSIDE, NodeInstance(char_room)))
 
                 # close to all objects on node
@@ -115,30 +118,29 @@ class WalkExecutor(ActionExecutor):
 
                 # close to all objects inside
                 if Property.CAN_OPEN in node.properties:
-                    changes.append(AddEdges(CharacterNode(char_index), Relation.CLOSE, ObjectInsideNode(node), add_reverse=True))
+                    changes.append(
+                        AddEdges(CharacterNode(char_index), Relation.CLOSE, ObjectInsideNode(node), add_reverse=True))
 
                 # close to all objects that node is on
-                changes.append(AddEdges(CharacterNode(char_index), Relation.CLOSE, SurfaceObjectNode(node), add_reverse=True))
-
+                changes.append(
+                    AddEdges(CharacterNode(char_index), Relation.CLOSE, SurfaceObjectNode(node), add_reverse=True))
 
                 if not modify:
                     yield state
                 else:
                     yield state.change_state(changes, node, current_obj)
-    
 
     def check_walk(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
 
-        #print("in check_walk, char_index = {}".format(char_index))
+        # print("in check_walk, char_index = {}".format(char_index))
 
         char_node = _get_character_node(state, char_index)
         if State.SITTING in char_node.states or State.LYING in char_node.states:
             info.error('{} is sitting', char_node)
             return False
-        
+
         char_room = _get_room_node(state, char_node)
         if char_room is None:
-
             assert False, "Char_room is none!"
 
         node_room = _get_room_node(state, node)
@@ -149,7 +151,7 @@ class WalkExecutor(ActionExecutor):
         if node in (doors + doorjambs):
             # door that connect the char_room
             if state.evaluate(ExistsRelation(NodeInstance(node), Relation.BETWEEN, NodeInstanceFilter(char_room))) or \
-                state.evaluate(ExistsRelation(NodeInstance(char_room), Relation.BETWEEN, NodeInstanceFilter(node))):
+                    state.evaluate(ExistsRelation(NodeInstance(char_room), Relation.BETWEEN, NodeInstanceFilter(node))):
                 return True
 
         # the return list is in reverse orders, living room --> door.1 --> dining room --> door.181 --> bathroom --> door.16 --> living room
@@ -163,7 +165,7 @@ class WalkExecutor(ActionExecutor):
             # walk to the nearest closed door is fine
             if node.id != closed_doors[-1].id:
                 info.error("Door(s) {} between {} and {} is (are) closed", ', '.join([str(d) for d in closed_doors]),
-                            char_room, node_room)
+                           char_room, node_room)
                 return False
 
         return True
@@ -181,7 +183,7 @@ class _FindExecutor(ActionExecutor):
             if self.check_find(state, node, info, char_index):
                 if modify:
                     yield state.change_state(
-                        [DeleteEdges(CharacterNode(char_index), [Relation.FACING], AnyNode()), 
+                        [DeleteEdges(CharacterNode(char_index), [Relation.FACING], AnyNode()),
                          AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node), add_reverse=True)],
                         node,
                         current_obj
@@ -194,9 +196,8 @@ class _FindExecutor(ActionExecutor):
             char_node = _get_character_node(state, char_index)
             info.error('{} is not close to {}', char_node, node)
             return False
-        
-        return True
 
+        return True
 
 
 _walk_find_executor = JoinedExecutor(WalkExecutor(), _FindExecutor())
@@ -251,7 +252,6 @@ class GreetExecutor(ActionExecutor):
 
 
 class SitExecutor(ActionExecutor):
-
     _MAX_OCCUPANCIES = {
         'couch': 4,
         'bed': 4,
@@ -267,8 +267,6 @@ class SitExecutor(ActionExecutor):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
-        print("heree!!!-sit")
-        print(node)
         if node is None:
             info.object_found_error()
         elif self.check_sittable(state, node, info, char_index):
@@ -306,11 +304,9 @@ class SitExecutor(ActionExecutor):
         return True
 
 
-
 class StandUpExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True,
-                in_place=False):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
         info.set_current_line(script[0])
         char_node = _get_character_node(state, char_index)
         if State.SITTING in char_node.states or State.LYING in char_node.states:
@@ -318,12 +314,12 @@ class StandUpExecutor(ActionExecutor):
             new_char_node.states.discard(State.SITTING)
             new_char_node.states.discard(State.LYING)
             if modify:
-                yield state.change_state([ChangeNode(new_char_node)], in_place=in_place) # zhuoyue, we have to have this "in_place" or we can't standup!!
+                yield state.change_state([ChangeNode(new_char_node)])
             else:
                 yield state
         else:
             info.error('{} is not sitting', char_node)
-            
+
 
 class GrabExecutor(ActionExecutor):
 
@@ -338,20 +334,23 @@ class GrabExecutor(ActionExecutor):
             if new_relation is not None:
                 char_node = _get_character_node(state, char_index)
                 char_room = _get_room_node(state, char_node)
-                changes = [DeleteEdges(NodeInstance(node), [Relation.ON, Relation.INSIDE, Relation.CLOSE], AnyNode(), delete_reverse=True),
-                           AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node), add_reverse=True), 
-                           AddEdges(CharacterNode(char_index), new_relation, NodeInstance(node)), 
+                changes = [DeleteEdges(NodeInstance(node), [Relation.ON, Relation.INSIDE, Relation.CLOSE], AnyNode(),
+                                       delete_reverse=True),
+                           AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node), add_reverse=True),
+                           AddEdges(CharacterNode(char_index), new_relation, NodeInstance(node)),
                            AddEdges(NodeInstance(node), Relation.INSIDE, NodeInstance(char_room))]
                 new_close, relation = _find_first_node_from(state, node, [Relation.ON, Relation.INSIDE, Relation.CLOSE])
                 if new_close is not None:
-                    changes += [AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(new_close), add_reverse=True),
-                                AddExecDataValue((Action.GRAB, node.id), (new_close, relation))]
+                    changes += [
+                        AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(new_close), add_reverse=True),
+                        AddExecDataValue((Action.GRAB, node.id), (new_close, relation))]
                 if modify:
                     yield state.change_state(changes)
                 else:
                     yield state
 
-    def check_grabbable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index) -> Optional[Relation]:
+    def check_grabbable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index) -> Optional[
+        Relation]:
         if Property.GRABBABLE not in node.properties and node.class_name not in ['water', 'child']:
             info.error('{} is not grabbable', node)
             return None
@@ -373,7 +372,6 @@ class GrabExecutor(ActionExecutor):
             info.error('{} does not have a free hand', char_node)
             return None
         return new_relation
-
 
 
 class OpenExecutor(ActionExecutor):
@@ -401,7 +399,7 @@ class OpenExecutor(ActionExecutor):
                 yield state
 
     def check_openable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
-        
+
         if Property.CAN_OPEN not in node.properties and node.class_name not in ["desk", "window"]:
             info.error('{} can not be opened', node)
             return False
@@ -410,7 +408,7 @@ class OpenExecutor(ActionExecutor):
             char_node = _get_character_node(state, char_index)
             info.error('{} is not close to {}', char_node, node)
             return False
-        
+
         if not self.close and _find_free_hand(state, char_index) is None:
             char_node = _get_character_node(state, char_index)
             info.error('{} does not have a free hand', char_node)
@@ -425,7 +423,6 @@ class OpenExecutor(ActionExecutor):
             info.error('{} is still on'.format(node))
             return False
         return True
-
 
 
 class PutExecutor(ActionExecutor):
@@ -447,7 +444,8 @@ class PutExecutor(ActionExecutor):
         elif _check_puttable(state, src_node, dest_node, self.relation, info, char_index):
             if modify:
                 yield state.change_state(
-                    [DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH], NodeInstance(src_node)),
+                    [DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH],
+                                 NodeInstance(src_node)),
                      AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(dest_node), add_reverse=True),
                      AddEdges(NodeInstance(src_node), Relation.CLOSE, NodeInstance(dest_node), add_reverse=True),
                      AddEdges(NodeInstance(src_node), self.relation, NodeInstance(dest_node)),
@@ -474,9 +472,12 @@ class PutBackExecutor(ActionExecutor):
                 if _check_puttable(state, src_node, dest_node, relation, info, char_index):
                     if modify:
                         yield state.change_state(
-                            [DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH], NodeInstance(src_node)),
-                             AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(dest_node), add_reverse=True),
-                             AddEdges(NodeInstance(src_node), Relation.CLOSE, NodeInstance(dest_node), add_reverse=True),
+                            [DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH],
+                                         NodeInstance(src_node)),
+                             AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(dest_node),
+                                      add_reverse=True),
+                             AddEdges(NodeInstance(src_node), Relation.CLOSE, NodeInstance(dest_node),
+                                      add_reverse=True),
                              AddEdges(NodeInstance(src_node), relation, NodeInstance(dest_node)),
                              ClearExecDataKey((Action.GRAB, src_node.id))]
                         )
@@ -537,7 +538,7 @@ class SwitchExecutor(ActionExecutor):
         if not _is_character_close_to(state, node, char_index):
             info.error('{} is not close to {}', _get_character_node(state, char_index), node)
             return False
-        #if _find_free_hand(state, char_index) is None:
+        # if _find_free_hand(state, char_index) is None:
         #    info.error('{} does not have a free hand', _get_character_node(state, char_index))
         #    return False
         if s not in node.states:
@@ -560,7 +561,7 @@ class DrinkExecutor(ActionExecutor):
         elif self.check_drinkable(state, node, info, char_index):
             if modify:
                 yield state.change_state([])
-            else: 
+            else:
                 yield state
 
     def check_drinkable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
@@ -585,7 +586,7 @@ class TurnToExecutor(ActionExecutor):
         elif self.check_turn_to(state, node, info):
             if modify:
                 yield state.change_state(
-                    [DeleteEdges(CharacterNode(char_index), [Relation.FACING], AnyNode()), 
+                    [DeleteEdges(CharacterNode(char_index), [Relation.FACING], AnyNode()),
                      AddEdges(CharacterNode(char_index), Relation.FACING, NodeInstance(node))]
                 )
             else:
@@ -642,14 +643,14 @@ class WipeExecutor(ActionExecutor):
             info.error('{} is not close to {}', char_node, node)
             return False
 
-        #if Property.SURFACES not in node.properties:
+        # if Property.SURFACES not in node.properties:
         #    info.error('{} is not a surface', node)
         #    return False
 
         nodes_in_hands = _find_nodes_from(state, char_node, [Relation.HOLDS_RH, Relation.HOLDS_LH])
         if len(nodes_in_hands) == 0:
             info.error('{} does not hold anything in hands', char_node)
-            return 
+            return
 
         return True
 
@@ -674,7 +675,7 @@ class PutOnExecutor(ActionExecutor):
     def check_puton(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
         char_node = _get_character_node(state, char_index)
         nodes_in_hands = _find_nodes_from(state, char_node, relations=[Relation.HOLDS_LH, Relation.HOLDS_RH])
-        
+
         if not any([n.id == node.id for n in nodes_in_hands]):
             info.error('{} is not holding {}', char_node, node)
             return False
@@ -792,7 +793,6 @@ class TouchExecutor(ActionExecutor):
 
 
 class LieExecutor(ActionExecutor):
-
     _MAX_OCCUPANCIES = {
         'couch': 2,
         'bathtub': 2,
@@ -853,19 +853,22 @@ class PourExecutor(ActionExecutor):
         elif self._check_pourable(state, src_node, dest_node, info, char_index):
             changes = [AddEdges(NodeInstance(src_node), Relation.INSIDE, NodeInstance(dest_node))]
             if src_node.class_name == 'water':
-                changes += [DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH], NodeInstance(src_node))]
+                changes += [DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH],
+                                        NodeInstance(src_node))]
             if modify:
                 yield state.change_state(changes)
             else:
                 yield state
 
-    def _check_pourable(self, state: EnvironmentState, src_node: GraphNode, dest_node: GraphNode, info: ExecutionInfo, char_index):
+    def _check_pourable(self, state: EnvironmentState, src_node: GraphNode, dest_node: GraphNode, info: ExecutionInfo,
+                        char_index):
 
         if Property.POURABLE not in src_node.properties and Property.DRINKABLE not in src_node.properties:
             info.error('{} is not pourable or drinkable', src_node)
             return False
 
-        if Property.RECIPIENT not in dest_node.properties and dest_node.class_name not in ["hands_both", "sponge", "face"]:
+        if Property.RECIPIENT not in dest_node.properties and dest_node.class_name not in ["hands_both", "sponge",
+                                                                                           "face"]:
             info.error('{} is not recipient', dest_node)
             return False
 
@@ -878,7 +881,7 @@ class PourExecutor(ActionExecutor):
         if not _is_character_close_to(state, dest_node, char_index):
             info.error('{} is not close to {}', char_node, dest_node)
             return False
-        
+
         return True
 
 
@@ -895,21 +898,21 @@ class TypeExecutor(ActionExecutor):
                 yield state.change_state([])
             else:
                 yield state
-        
+
     def check_typeable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
         char_node = _get_character_node(state, char_index)
 
         if not _is_character_close_to(state, node, char_index):
             info.error('{} is not close to {}', char_node, node)
             return False
-        
+
         if node.class_name == 'keyboard':
             return True
 
         if Property.HAS_SWITCH not in node.properties:
             info.error('{} does not have switch', node)
             return False
-        
+
         return True
 
 
@@ -931,7 +934,7 @@ class WatchExecutor(ActionExecutor):
         char_node = _get_character_node(state, char_index)
         char_room = _get_room_node(state, char_node)
         node_room = _get_room_node(state, node)
-        
+
         if Property.LOOKABLE not in node.properties:
             info.error('{} not lookable', node)
             return False
@@ -941,7 +944,9 @@ class WatchExecutor(ActionExecutor):
         if not _is_character_face_to(state, node, char_index):
             info.error('{} does not face {}', char_node, node)
             return False
-        if node.class_name != 'computer' and (State.SITTING in char_node.states or State.LYING in char_node.states) and not state.evaluate(ExistsRelation(CharacterNode(char_index), Relation.FACING, NodeInstanceFilter(node))):
+        if node.class_name != 'computer' and (
+                State.SITTING in char_node.states or State.LYING in char_node.states) and not state.evaluate(
+            ExistsRelation(CharacterNode(char_index), Relation.FACING, NodeInstanceFilter(node))):
             info.error('{} is not facing {} while sitting', char_node, node)
             return False
         if _is_inside(state, node):
@@ -966,9 +971,11 @@ class MoveExecutor(ActionExecutor):
                 else:
                     yield state
 
-    def check_movable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, action_name: str, char_index) -> Optional[Relation]:
+    def check_movable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, action_name: str,
+                      char_index) -> Optional[Relation]:
 
-        if Property.MOVABLE not in node.properties and (action_name != 'push' and node.class_name != 'button') and node.class_name not in ['chair', 'curtain']:
+        if Property.MOVABLE not in node.properties and (
+                action_name != 'push' and node.class_name != 'button') and node.class_name not in ['chair', 'curtain']:
             info.error('{} is not movable', node)
             return None
         if not _is_character_close_to(state, node, char_index):
@@ -1004,7 +1011,7 @@ class WashExecutor(ActionExecutor):
                 yield state
 
     def check_washable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
-        
+
         if not _is_character_close_to(state, node, char_index):
             info.error('{} is not close to {}', _get_character_node(state, char_index), node)
             return False
@@ -1027,7 +1034,7 @@ class SqueezeExecutor(ActionExecutor):
                 yield state
 
     def check_squeezable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
-        
+
         if _find_free_hand(state, char_index) is None:
             info.error('{} does not have a free hand', _get_character_node(state, char_index))
             return False
@@ -1035,9 +1042,9 @@ class SqueezeExecutor(ActionExecutor):
             info.error('{} is not close to {}', _get_character_node(state, char_index), node)
             return False
 
-        squeezable_objects = ['cleaning_solution', 'tooth_paste', 'shampoo', 
-                'food_peanut_butter', 'dish_soap', 'soap', 'towel', 'rag', 'paper', 'sponge', 
-                'food_lemon', 'check']
+        squeezable_objects = ['cleaning_solution', 'tooth_paste', 'shampoo',
+                              'food_peanut_butter', 'dish_soap', 'soap', 'towel', 'rag', 'paper', 'sponge',
+                              'food_lemon', 'check']
         if Property.CLOTHES not in node.properties and node.class_name not in squeezable_objects:
             info.error('{} is not clothes', node)
             return False
@@ -1086,7 +1093,7 @@ class PlugExecutor(ActionExecutor):
         if not self.plug_in and State.ON in node.states:
             info.error('{} is still on', node)
         return True
-    
+
 
 class CutExecutor(ActionExecutor):
 
@@ -1145,7 +1152,7 @@ class EatExecutor(ActionExecutor):
         if not _is_character_close_to(state, node, char_index):
             info.error('{} is not close to {}', _get_character_node(state, char_index), node)
             return False
-            
+
         if Property.EATABLE in node.properties:
             return True
         else:
@@ -1218,13 +1225,18 @@ def _is_character_face_to(state: EnvironmentState, node: Node, char_index: int):
 
 
 def _get_character_node(state: EnvironmentState, char_index: int):
+    # zhuoyue, sometimes, new character nodes are stored in new_nodes
+    if len(state._new_nodes) >= 1:
+        for node in state._new_nodes.values():  # zhuoyue: since we only need one character, we don't care about char_index
+            if node.class_name.lower() == 'character':
+                return node
     return next(state.get_char_node(char_index), None)
 
 
 def _get_room_node(state: EnvironmentState, node: Node):
     if node.category == 'Rooms':
         return node
-    inside_nodes = state.get_nodes_from(node, Relation.INSIDE) 
+    inside_nodes = state.get_nodes_from(node, Relation.INSIDE)
     # print(node)
     if len(inside_nodes) > 1:
         for n in state.get_nodes_from(node, Relation.INSIDE):
@@ -1249,6 +1261,7 @@ def _find_nodes_to(state: EnvironmentState, node: Node, relations: List[Relation
             if node in nl:
                 nodes.append(src_node)
     return nodes
+
 
 def _find_nodes_from(state: EnvironmentState, node: Node, relations: List[Relation]):
     nodes = []
@@ -1361,7 +1374,6 @@ def BFS(adj_lists: dict, s):
 
 
 class ScriptExecutor(object):
-
     _action_executors = {
         Action.WALK: WalkExecutor(),
         Action.FIND: FindExecutor(),
@@ -1374,40 +1386,40 @@ class ScriptExecutor(object):
         Action.PUTIN: PutExecutor(Relation.INSIDE),
         Action.SWITCHON: SwitchExecutor(True),
         Action.SWITCHOFF: SwitchExecutor(False),
-        Action.DRINK: DrinkExecutor(), 
-        Action.LOOKAT: LookAtExecutor(), 
-        Action.TURNTO: TurnToExecutor(), 
-        Action.WIPE: WipeExecutor(), 
+        Action.DRINK: DrinkExecutor(),
+        Action.LOOKAT: LookAtExecutor(),
+        Action.TURNTO: TurnToExecutor(),
+        Action.WIPE: WipeExecutor(),
         Action.RUN: WalkExecutor(),
-        Action.PUTON: PutOnExecutor(), 
-        Action.PUTOFF: PutOffExecutor(), 
-        Action.GREET: GreetExecutor(), 
-        Action.DROP: DropExecutor(), 
-        Action.READ: ReadExecutor(), 
-        Action.POINTAT: PointAtExecutor(), 
-        Action.TOUCH: TouchExecutor(), 
+        Action.PUTON: PutOnExecutor(),
+        Action.PUTOFF: PutOffExecutor(),
+        Action.GREET: GreetExecutor(),
+        Action.DROP: DropExecutor(),
+        Action.READ: ReadExecutor(),
+        Action.POINTAT: PointAtExecutor(),
+        Action.TOUCH: TouchExecutor(),
         Action.LIE: LieExecutor(),
-        Action.PUTOBJBACK: PutBackExecutor(), 
-        Action.POUR: PourExecutor(), 
-        Action.TYPE: TypeExecutor(), 
-        Action.WATCH: WatchExecutor(), 
-        Action.PUSH: MoveExecutor(), 
-        Action.PULL: MoveExecutor(), 
-        Action.MOVE: MoveExecutor(), 
+        Action.PUTOBJBACK: PutBackExecutor(),
+        Action.POUR: PourExecutor(),
+        Action.TYPE: TypeExecutor(),
+        Action.WATCH: WatchExecutor(),
+        Action.PUSH: MoveExecutor(),
+        Action.PULL: MoveExecutor(),
+        Action.MOVE: MoveExecutor(),
         Action.RINSE: WashExecutor(),
-        Action.WASH: WashExecutor(), 
-        Action.SCRUB: WashExecutor(), 
-        Action.SQUEEZE: SqueezeExecutor(), 
-        Action.PLUGIN: PlugExecutor(True), 
-        Action.PLUGOUT: PlugExecutor(False), 
-        Action.CUT: CutExecutor(), 
-        Action.EAT: EatExecutor(), 
-        Action.SLEEP: SleepExecutor(), 
-        Action.WAKEUP: WakeUpExecutor(), 
+        Action.WASH: WashExecutor(),
+        Action.SCRUB: WashExecutor(),
+        Action.SQUEEZE: SqueezeExecutor(),
+        Action.PLUGIN: PlugExecutor(True),
+        Action.PLUGOUT: PlugExecutor(False),
+        Action.CUT: CutExecutor(),
+        Action.EAT: EatExecutor(),
+        Action.SLEEP: SleepExecutor(),
+        Action.WAKEUP: WakeUpExecutor(),
         Action.RELEASE: DropExecutor()
     }
 
-    def __init__(self, graph: EnvironmentGraph, name_equivalence, char_index: int=0):
+    def __init__(self, graph: EnvironmentGraph, name_equivalence, char_index: int = 0):
         self.graph = graph
         self.name_equivalence = name_equivalence
         self.processing_time_limit = 10  # 10 seconds
@@ -1415,7 +1427,7 @@ class ScriptExecutor(object):
         self.info = ExecutionInfo()
         self.char_index = char_index
 
-    def find_solutions(self, script: Script, init_changers: List[StateChanger]=None):
+    def find_solutions(self, script: Script, init_changers: List[StateChanger] = None):
         self.processing_limit = time.time() + self.processing_time_limit
         init_state = EnvironmentState(self.graph, self.name_equivalence)
         _apply_initial_changers(init_state, script, init_changers)
@@ -1433,7 +1445,7 @@ class ScriptExecutor(object):
                 if time.time() > self.processing_limit:
                     break
 
-    def execute(self, script: Script, init_changers: List[StateChanger]=None, w_graph_list: bool=True):
+    def execute(self, script: Script, init_changers: List[StateChanger] = None, w_graph_list: bool = True):
 
         info = self.info
         state = EnvironmentState(self.graph, self.name_equivalence, instance_selection=True)
@@ -1443,12 +1455,12 @@ class ScriptExecutor(object):
             prev_state = state
             if w_graph_list:
                 graph_state_list.append(state.to_dict())
-            
+
             future_script = script.from_index(i)
             state = next(self.call_action_method(future_script, state, info, self.char_index), None)
             if state is None:
                 return False, prev_state, graph_state_list
-                
+
         if w_graph_list:
             graph_state_list.append(state.to_dict())
 
@@ -1469,14 +1481,15 @@ class ScriptExecutor(object):
 
     def execute_one_step(self, script: Script, state: EnvironmentState):
         prev_state = state
-        #print("in execute_one_step, char_index = {}".format(self.char_index))
+        # print("in execute_one_step, char_index = {}".format(self.char_index))
         state = next(self.call_action_method(script, state, self.info, self.char_index), None)
         if state is None:
             return False, prev_state
 
         return True, state
 
-def _apply_initial_changers(state: EnvironmentState, script: Script, changers: List[StateChanger]=None):
+
+def _apply_initial_changers(state: EnvironmentState, script: Script, changers: List[StateChanger] = None):
     if changers is not None:
         for changer in changers:
             changer.apply_changes(state, script=script)

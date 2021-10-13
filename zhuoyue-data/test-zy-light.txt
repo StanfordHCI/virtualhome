@@ -1,0 +1,10 @@
+Zhuoyue test
+
+[walk] <living_room> (1)
+[Walk] <lightswitch> (1)
+[Find] <lightswitch> (1)
+[SwitchOn] <lightswitch> (1)
+[walk] <kitchen> (1)
+[Walk] <lightswitch> (10098)
+[Find] <lightswitch> (10098)
+[SwitchOn] <lightswitch> (10098)

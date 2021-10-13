@@ -795,6 +795,7 @@ class ChangeNode(StateChanger):
         state.change_node(self.node)
 
 
+
 class AddNode(StateChanger):
 
     def __init__(self, node: GraphNode):

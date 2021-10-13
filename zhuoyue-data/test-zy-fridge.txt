@@ -1,0 +1,2 @@
+[walk] <fridge> (1)
+[open] <fridge> (1)

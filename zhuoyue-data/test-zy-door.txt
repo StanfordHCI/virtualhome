@@ -1,0 +1,8 @@
+[walk] <living_room> (1)
+[Walk] <door> (1)
+[Find] <door> (1)
+[Close] <door> (1)
+[walk] <kitchen> (1)
+[Walk] <door> (2)
+[Find] <door> (2)
+[Close] <door> (2)

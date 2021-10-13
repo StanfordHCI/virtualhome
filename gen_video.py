@@ -24,9 +24,10 @@ def read_action_file(action_file: str):
     actions = []
     with open(action_file, 'r') as action_ifs:
         for line in action_ifs:
-            match = re_compiled.match(line.strip())
-            if match:
-                actions.append(match.group())
+            # zhuoyue: here I loosely used '[' to check if it's a legit line, which is not quite strict,
+            # but as long as we make sure the script is good, this should be good as well
+            if '[' in line:
+                actions.append(line.strip())
 
     return actions
 
@@ -111,9 +112,6 @@ def main():
     # Load script from file
     script = read_action_file(action_file)
     print(script)
-
-    comm = UnityCommunication()
-
     print('Inferring preconditions...')
     # script = ['[Walk] <television> (1)', '[SwitchOn] <television> (1)',
     #           '[Walk] <sofa> (1)', '[Find] <controller> (1)',
@@ -122,6 +120,7 @@ def main():
     print(preconds)
 
     print('Loading graph')
+    comm = UnityCommunication()
     comm.reset(ENV)
     comm.add_character()
     _, graph_input = comm.environment_graph()
@@ -144,7 +143,7 @@ def main():
 
     before = time.time()
     try:
-        res = render_script(comm, video_script, graph_state_list[0], ENV, output, 'Chars/Male1')
+        res = render_script(comm, video_script, graph_state_list[0], ENV, output, find_solution=True)
         print(res)
     except Exception as e:
         print("exception in render_script_from_path")

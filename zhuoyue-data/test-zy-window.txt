@@ -1,0 +1,3 @@
+[Walk] <window> (1)
+[Find] <window> (1)
+[Open] <window> (1)

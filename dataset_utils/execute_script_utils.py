@@ -168,7 +168,7 @@ def process_action(action, graph, env_graph):
 
 
 # Renders a script , given a scene and initial environment
-def render_script(comm, script, init_graph, scene_num, output, character):
+def render_script(comm, script, init_graph, scene_num, output, find_solution):
     comm.reset(scene_num)
     comm.add_character()
     print(output)
@@ -215,7 +215,7 @@ def render_script(comm, script, init_graph, scene_num, output, character):
     success, message_exec = comm.render_script(script, recording=True, frame_rate=5, save_every_n_frames=5,
                                                image_synthesis=['rgb', 'point_cloud', 'seg_class', 'seg_inst'],
                                                image_width=600, image_height=400, processing_time_limit=20 * 60,
-                                               output_folder=output, camera_mode=camera_modes, find_solution=True,
+                                               output_folder=output, camera_mode=camera_modes, find_solution=find_solution,
                                                skip_animation=False)
 
     if success:

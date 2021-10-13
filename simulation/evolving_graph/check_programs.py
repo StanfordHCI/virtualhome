@@ -13,7 +13,6 @@ from .scripts import read_script, read_script_from_string, read_script_from_list
 from .execution import ScriptExecutor
 from .environment import EnvironmentGraph
 
-
 random.seed(123)
 verbose = True
 dump = True
@@ -45,7 +44,7 @@ def dump_one_data(txt_file, script, graph_state_list, id_mapping, graph_path):
     old_f.close()
 
     new_f = open(new_path, 'w')
-    
+
     prefix = old_program.split('\n\n\n')[0]
     new_f.write(prefix)
     new_f.write('\n\n\n')
@@ -60,8 +59,9 @@ def dump_one_data(txt_file, script, graph_state_list, id_mapping, graph_path):
         for k, v in id_mapping.items():
             obj_name, obj_number = k
             id = v
-            script_line_str = script_line_str.replace('<{}> ({})'.format(obj_name, id), '<{}> ({}.{})'.format(obj_name, obj_number, id))
-        
+            script_line_str = script_line_str.replace('<{}> ({})'.format(obj_name, id),
+                                                      '<{}> ({}.{})'.format(obj_name, obj_number, id))
+
         new_f.write(script_line_str)
         new_f.write('\n')
 
@@ -103,23 +103,23 @@ def dump_one_data(txt_file, script, graph_state_list, id_mapping, graph_path):
 
 
 def translate_graph_dict_nofile(graph_dict):
-
     abs_dir_path = os.path.dirname(os.path.abspath(__file__))
 
     file_name = os.path.join(abs_dir_path, '../../resources/properties_data.json')
     properties_data = utils.load_properties_data(file_name=file_name)
 
-    static_objects = ['bathroom', 'floor', 'wall', 'ceiling', 'rug', 'curtains', 'ceiling_lamp', 'wall_lamp', 
-                        'bathroom_counter', 'bathtub', 'towel_rack', 'wall_shelf', 'stall', 'bathroom_cabinet', 
-                        'toilet', 'shelf', 'door', 'doorjamb', 'window', 'lightswitch', 'bedroom', 'table_lamp', 
-                        'chair', 'bookshelf', 'nightstand', 'bed', 'closet', 'coatrack', 'coffee_table', 
-                        'pillow', 'hanger', 'character', 'kitchen', 'maindoor', 'tv_stand', 'kitchen_table', 
-                        'bench', 'kitchen_counter', 'sink', 'power_socket', 'tv', 'clock', 'wall_phone', 
-                        'cutting_board', 'stove', 'oventray', 'toaster', 'fridge', 'coffeemaker', 'microwave', 
-                        'livingroom', 'sofa', 'coffee_table', 'desk', 'cabinet', 'standing_mirror', 'globe', 
-                        'mouse', 'mousemat', 'cpu_screen', 'computer', 'cpu_case', 'keyboard', 'ceilingfan', 
-                        'kitchen_cabinets', 'dishwasher', 'cookingpot', 'wallpictureframe', 'vase', 'knifeblock', 
-                        'stovefan', 'orchid', 'long_board', 'garbage_can', 'photoframe', 'balance_ball', 'closet_drawer', 'faucet']
+    static_objects = ['bathroom', 'floor', 'wall', 'ceiling', 'rug', 'curtains', 'ceiling_lamp', 'wall_lamp',
+                      'bathroom_counter', 'bathtub', 'towel_rack', 'wall_shelf', 'stall', 'bathroom_cabinet',
+                      'toilet', 'shelf', 'door', 'doorjamb', 'window', 'lightswitch', 'bedroom', 'table_lamp',
+                      'chair', 'bookshelf', 'nightstand', 'bed', 'closet', 'coatrack', 'coffee_table',
+                      'pillow', 'hanger', 'character', 'kitchen', 'maindoor', 'tv_stand', 'kitchen_table',
+                      'bench', 'kitchen_counter', 'sink', 'power_socket', 'tv', 'clock', 'wall_phone',
+                      'cutting_board', 'stove', 'oventray', 'toaster', 'fridge', 'coffeemaker', 'microwave',
+                      'livingroom', 'sofa', 'coffee_table', 'desk', 'cabinet', 'standing_mirror', 'globe',
+                      'mouse', 'mousemat', 'cpu_screen', 'computer', 'cpu_case', 'keyboard', 'ceilingfan',
+                      'kitchen_cabinets', 'dishwasher', 'cookingpot', 'wallpictureframe', 'vase', 'knifeblock',
+                      'stovefan', 'orchid', 'long_board', 'garbage_can', 'photoframe', 'balance_ball', 'closet_drawer',
+                      'faucet']
 
     static_objects = static_objects + [x.replace('_', '') for x in static_objects]
 
@@ -128,29 +128,34 @@ def translate_graph_dict_nofile(graph_dict):
 
     available_id = [i["id"] for i in filter(lambda v: v["class_name"] in static_objects, graph_dict['nodes'])]
 
-    new_edges = [i for i in filter(lambda v: v['to_id'] in available_id and v['from_id'] in available_id, graph_dict['edges'])]
+    new_edges = [i for i in
+                 filter(lambda v: v['to_id'] in available_id and v['from_id'] in available_id, graph_dict['edges'])]
 
-    # change the object name 
+    # change the object name
     script_object2unity_object = utils.load_name_equivalence()
     unity_object2script_object = utils.build_unity2object_script(script_object2unity_object)
 
     new_nodes_script_object = []
     for node in new_nodes:
-        class_name = unity_object2script_object[node["class_name"]].lower().replace(' ', '_') if node["class_name"] in unity_object2script_object else node["class_name"].lower().replace(' ', '_')
-        
+        class_name = unity_object2script_object[node["class_name"]].lower().replace(' ', '_') if node[
+                                                                                                     "class_name"] in unity_object2script_object else \
+            node["class_name"].lower().replace(' ', '_')
+
         new_nodes_script_object.append({
-            "properties": [i.name for i in properties_data[class_name]] if class_name in properties_data else node["properties"], 
-            "id": node["id"], 
-            "states": node["states"], 
-            "category": node["category"], 
+            "properties": [i.name for i in properties_data[class_name]] if class_name in properties_data else node[
+                "properties"],
+            "id": node["id"],
+            "states": node["states"],
+            "category": node["category"],
             "class_name": class_name
         })
     return {"nodes": new_nodes_script_object, "edges": new_edges, 'trimmed_nodes': trimmed_nodes}
 
+
 def translate_graph_dict(path):
     """
-        Changes the object names and properties of an environment graph so that 
-        they match with the names in the scripts. 
+        Changes the object names and properties of an environment graph so that
+        they match with the names in the scripts.
     """
     graph_dict = utils.load_graph_dict(path)
     trimmed_graph = translate_graph_dict_nofile(graph_dict)
@@ -159,8 +164,8 @@ def translate_graph_dict(path):
     return translated_path
 
 
-def check_one_program(helper, script, precond, graph_dict, w_graph_list, modify_graph=True, place_other_objects=True, id_mapping={}, **info):
-
+def check_one_program(helper, script, precond, graph_dict, w_graph_list, modify_graph=True, place_other_objects=True,
+                      id_mapping={}, **info):
     helper.initialize(graph_dict)
     script, precond = modify_objects_unity2script(helper, script, precond)
 
@@ -168,8 +173,9 @@ def check_one_program(helper, script, precond, graph_dict, w_graph_list, modify_
         ## add missing object from scripts (id from 1000) and set them to default setting
         ## id mapping can specify the objects that already specify in the graphs
         helper.set_to_default_state(graph_dict, None, id_checker=lambda v: True)
-        id_mapping, first_room, room_mapping = helper.add_missing_object_from_script(script, precond, graph_dict, id_mapping)
-        
+        id_mapping, first_room, room_mapping = helper.add_missing_object_from_script(script, precond, graph_dict,
+                                                                                     id_mapping)
+
         info = {'room_mapping': room_mapping}
         objects_id_in_script = [v for v in id_mapping.values()]
         helper.set_to_default_state(graph_dict, first_room, id_checker=lambda v: v in objects_id_in_script)
@@ -190,14 +196,15 @@ def check_one_program(helper, script, precond, graph_dict, w_graph_list, modify_
         random_objects_id = helper.random_objects_id
         helper.prepare_from_precondition(precond, id_mapping, graph_dict)
 
-        helper.open_all_doors(graph_dict) # zhuoyue
+        helper.open_all_doors(graph_dict)
         helper.ensure_light_on(graph_dict, id_checker=lambda v: v not in objects_id_in_script)
-        
+
         helper.check_binary(graph_dict, id_checker=lambda v: v >= random_objects_id, verbose=False)
         helper.check_binary(graph_dict, id_checker=lambda v: True, verbose=True)
-        
-        assert len(graph_dict["nodes"]) <= max_nodes, 'Max nodes: {}. Current Nodes {}'.format(len(graph_dict['nodes']), max_nodes)
-    
+
+        assert len(graph_dict["nodes"]) <= max_nodes, 'Max nodes: {}. Current Nodes {}'.format(len(graph_dict['nodes']),
+                                                                                               max_nodes)
+
     elif len(id_mapping) != 0:
         # Assume that object mapping specify all the objects in the scripts
         helper.modify_script_with_specified_id(script, id_mapping, **info)
@@ -215,11 +222,10 @@ def check_one_program(helper, script, precond, graph_dict, w_graph_list, modify_
     return message, executable, final_state, graph_state_list, id_mapping, info, script
 
 
-def check_script(program_str, precond, graph_path, inp_graph_dict=None, 
+def check_script(program_str, precond, graph_path, inp_graph_dict=None,
                  modify_graph=True, id_mapping={}, info={}):
-
     helper = utils.graph_dict_helper(max_nodes=max_nodes)
-    
+
     try:
         script = read_script_from_list_string(program_str)
     except ScriptParseException:
@@ -237,7 +243,7 @@ def check_script(program_str, precond, graph_path, inp_graph_dict=None,
 
 
 def check_original_script(inp):
-    """ 
+    """
     Checks if a script is executable in a graph environment
     Given a script and a graph. Infers script preconditions modifies the graph
     and checks whether the script can be executed.
@@ -246,7 +252,7 @@ def check_original_script(inp):
     txt_file, graph_path = inp
 
     helper = utils.graph_dict_helper(max_nodes=max_nodes)
-    
+
     try:
         script = read_script(txt_file)
     except ScriptParseException:
@@ -258,7 +264,8 @@ def check_original_script(inp):
 
     precond = json.load(open(precond_path))
 
-    message, executable, _, graph_state_list, id_mapping, _, _ = check_one_program(helper, script, precond, graph_dict, w_graph_list=True)
+    message, executable, _, graph_state_list, id_mapping, _, _ = check_one_program(helper, script, precond, graph_dict,
+                                                                                   w_graph_list=True)
     if executable and dump:
         dump_one_data(txt_file, script, graph_state_list, id_mapping, graph_path)
 
@@ -275,7 +282,7 @@ def modify_objects_unity2script(helper, script=[], precond=[]):
 
     for p in precond:
         for k, vs in p.items():
-            if isinstance(vs[0], list): 
+            if isinstance(vs[0], list):
                 for v in vs:
                     v[0] = v[0].lower().replace(' ', '_')
                     if v[0] in helper.unity_object2script_object:
@@ -285,12 +292,11 @@ def modify_objects_unity2script(helper, script=[], precond=[]):
                 v[0] = v[0].lower().replace(' ', '_')
                 if v[0] in helper.unity_object2script_object:
                     v[0] = helper.unity_object2script_object[v[0]]
-            
+
     return script, precond
 
 
 def check_whole_set(dir_path, graph_path):
-
     """Use precondition to modify the environment graphs
     """
 
@@ -303,18 +309,18 @@ def check_whole_set(dir_path, graph_path):
     if isinstance(graph_path, list):
         multiple_graphs = True
         executable_scene_hist = {p: 0 for p in graph_path}
-    else: 
+    else:
         multiple_graphs = False
 
     info = {}
     if os.path.isfile('data/executable_info.json'):
         with open('data/executable_info.json', 'r') as f:
             info = json.load(f)
-    n = max(len(program_txt_files) // (num_process*4), 1)
+    n = max(len(program_txt_files) // (num_process * 4), 1)
     program_txt_files = np.array(program_txt_files)
     pool = Pool(processes=num_process)
     for txt_files in tqdm(np.array_split(program_txt_files, n)):
-        
+
         if multiple_graphs:
             # Distribute programs across different graphs. Every program is executed by 3 graphs
             mp_inputs = []
@@ -324,7 +330,7 @@ def check_whole_set(dir_path, graph_path):
                     mp_inputs.append([f, g])
         else:
             mp_inputs = [[f, graph_path] for f in txt_files]
-        
+
         if multi_process:
             results = pool.map(check_original_script, mp_inputs)
         else:
@@ -349,7 +355,7 @@ def check_whole_set(dir_path, graph_path):
                 print(i_txt_file)
                 print(i_graph_path)
                 print(colored(message, "cyan"))
-                
+
             if i_txt_file not in info:
                 info[i_txt_file] = []
             info[i_txt_file].append({"message": message, "graph_path": i_graph_path})
@@ -358,8 +364,11 @@ def check_whole_set(dir_path, graph_path):
         info['scene_hist'] = executable_scene_hist
         print(executable_scene_hist)
 
-    print("Total programs: {}, executable programs: {} (unique: {})".format(len(program_txt_files), len(executable_programs), len(set(executable_programs))))
-    print("Programs that can not be parsed: {} (unique: {})".format(len(not_parsable_programs), len(set(not_parsable_programs))))
+    print("Total programs: {}, executable programs: {} (unique: {})".format(len(program_txt_files),
+                                                                            len(executable_programs),
+                                                                            len(set(executable_programs))))
+    print("Programs that can not be parsed: {} (unique: {})".format(len(not_parsable_programs),
+                                                                    len(set(not_parsable_programs))))
     if len(executable_program_length):
         executable_program_length = sum(executable_program_length) / len(executable_program_length)
     else:
@@ -372,12 +381,12 @@ def check_whole_set(dir_path, graph_path):
 
     info["executable_prog_len"] = executable_program_length
     info["non_executable_prog_len"] = not_executable_program_length
-    print("Executable program average length: {:.2f}, not executable program average length: {:.2f}".format(executable_program_length, not_executable_program_length))
+    print("Executable program average length: {:.2f}, not executable program average length: {:.2f}".format(
+        executable_program_length, not_executable_program_length))
     json.dump(info, open("data/executable_info.json", 'w'))
 
 
 def check_executability(input):
-
     script, graph_dict = input
     if len(script.split(', ')) == 1:
         final_state = graph_dict
@@ -421,7 +430,6 @@ def check_executability(input):
 
 
 def modify_script(script):
-
     modif_script = []
     for script_line in script.split(', '):
         action, object_name, object_i, subject_name, subject_i = script_line.split(' ')
@@ -441,7 +449,8 @@ if __name__ == '__main__':
         translated_path = translate_graph_dict(path='example_graphs/TestScene7_graph.json')
         translated_path = ['example_graphs/TrimmedTestScene7_graph.json']
     else:
-        translated_path = [translate_graph_dict(path='example_graphs/TestScene{}_graph.json'.format(i+1)) for i in range(6)]
-        translated_path = ['example_graphs/TrimmedTestScene{}_graph.json'.format(i+1) for i in range(6)]
+        translated_path = [translate_graph_dict(path='example_graphs/TestScene{}_graph.json'.format(i + 1)) for i in
+                           range(6)]
+        translated_path = ['example_graphs/TrimmedTestScene{}_graph.json'.format(i + 1) for i in range(6)]
     programs_dir = 'data/input_scripts_preconds_release/programs_processed_precond_nograb_morepreconds'
     check_whole_set(programs_dir, graph_path=translated_path)

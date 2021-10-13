@@ -16,16 +16,22 @@ ENV = 2
 # regular expression to get actions
 # zhuoyue: we should match all kinds of ids, not just 1s.
 # also, Griffin's original regular expression prevent things like "standup", so I add the `|\[.+\]`
-re_compiled = re.compile("^\[.+\] <[a-zA-Z_]+> \(\d+\)|( <[a-zA-Z_]+> \(\d+\)) |\[.+\]$")
+re_compiled = re.compile("^\[.+\] <[a-zA-Z_]+> \(\d+\)|\[.+\] <[a-zA-Z_]+> \(\d+(\.\d+)\)|( <[a-zA-Z_]+> \(\d+\)) |\[.+\]$")
 
 
 def read_action_file(action_file: str):
     actions = []
     with open(action_file, 'r') as action_ifs:
         for line in action_ifs:
-            match = re_compiled.match(line.strip())
-            if match:
-                actions.append(match.group())
+            # zhuoyue: here I loosely used '[' to check if it's a legit line, which is not quite strict,
+            # but as long as we make sure the script is good, this should be good as well
+            if '[' in line:
+                actions.append(line.strip())
+
+            # zhuoyue: original code
+            # match = re_compiled.match(line.strip())
+            # if match:
+            #     actions.append(match.group())
 
     return actions
 
@@ -70,8 +76,8 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=1, num_ch
     # because the ids of char cameras starts from 20 (there are 20 scene cameras, 8 character cameras)
     # cameras_select.extend([str(i + len(scene_camera_ids)) for i in range(num_char_cameras)])
     # only show the first camera (id: 0) and the one mounted on the person ( id:28 the 29th camera)
-    # cameras_select = ['0', '28']
-    cameras_select = ['0']
+    # cameras_select = ['0', '1', '2', '3', '28']
+    cameras_select = ['1']
     print(cameras_select)
 
     frame_num = 0
@@ -82,8 +88,8 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=1, num_ch
         # if graph_state['nodes'][0]['id'] == 163:
         #     graph_state['nodes'][0]['states'] = ["CLEAN", "PLUGGED_IN", "CLOSED"]
 
-        with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
-            json.dump(graph_state, file_obj)
+        # with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
+        #     json.dump(graph_state, file_obj)
 
         # f = open("{}/{}.json".format(output, i),)
         # graph_state = json.load(f)
@@ -158,7 +164,7 @@ graph_input = check_programs.translate_graph_dict_nofile(graph_input)
 message, final_state, graph_state_list, graph_dict, id_mapping, info, helper, modif_script = check_programs.check_script(
     script, preconds, graph_path=None, inp_graph_dict=graph_input)
 
-# zhuoeyue: graph_state_list is basically a list of nodes, each node is a list of states, which has been looped
+# zhuoyue: graph_state_list is basically a list of nodes, each node is a list of states, which has been looped
 # in the `for graph_state in tqdm(graph_state_list)`
 
 if message == 'Script is executable':
@@ -173,6 +179,7 @@ if message == 'Script is executable':
     obtain_snapshots(graph_state_list, comm, output)
 else:
     print("Not executable!!!")
+    print(message)
     # # load json
     # for i in range(4):
     #     f = open("{}/{}.json".format(output, i),)
