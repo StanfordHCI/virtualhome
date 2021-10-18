@@ -109,13 +109,18 @@ class DataGenerator():
                     # Script is not executable, since <sink> (156) can not be opened when executing "[OPEN] <sink> (156) [97]"
                     if obj_match.lower() == 'sink':
                         continue
+                    # <dishwasher> (166) is still on when executing "[OPEN] <dishwasher> (166) [330]"
+                    if obj_match.lower() == 'dishwasher' and \
+                            (action_match.lower() == 'open' or action_match.lower() == 'close'):
+                        continue
                     if obj_match.lower() not in html_list:
                         continue
+
                     if obj_match.lower() == 'lightswitch':  # make sure the lights are not switch twice
                         id_match = int(line[line.find("(") + 1:line.find(")")])
-                        if action_match.lower() == 'SwitchOn' and self.lights_states[id_match] == 1:
+                        if action_match.lower() == 'switchon' and self.lights_states[id_match] == 1:
                             continue
-                        elif action_match.lower() == 'SwitchOff' and self.lights_states[id_match] == 0:
+                        elif action_match.lower() == 'switchoff' and self.lights_states[id_match] == 0:
                             continue
                     else:
                         if obj_match.lower() == 'kitchen_cabinet' or obj_match.lower() == 'cupboard':  # it doesn't have switch on..so
@@ -196,7 +201,7 @@ if __name__ == '__main__':
 
     g = DataGenerator(path)
     for i in range(10):
-        g.run(selected_num_files=10, total_num_files=1186, curr_room='bedroom')
+        g.run(selected_num_files=80, total_num_files=1186, curr_room='bedroom')
         textfile = open("./Output-zhuoyue-generate-data/{}.txt".format(i), "w")
         for element in g.actions:
             textfile.write(element + "\n")

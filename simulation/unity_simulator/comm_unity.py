@@ -216,6 +216,21 @@ class UnityCommunication(object):
              })
         return response['success']
 
+    def get_motion_sensor_states(self, char_index=0):  # zhuoyue
+        """
+        get the distances between characters to corners
+        :param int char_index: the index of the character you want to move
+        :return: succes (bool)
+        """
+        response = self.post_command(
+            {'id': str(time.time()),
+             'action': 'get_motion_sensor_states',
+             'stringParams': [json.dumps({
+                 'char_index': char_index,
+             })]
+             })
+        return response['success'], response['message']
+
     def check(self, script_lines):
         response = self.post_command({'id': str(time.time()), 'action': 'check_script', 'stringParams': script_lines})
         return response['success'], response['message']
@@ -359,7 +374,7 @@ class UnityCommunication(object):
         Can be used to add, move, or remove objects or change their state or size.
 
         :param dict new_graph: a dictionary corresponding to the new graph of the form `{'nodes': ..., 'edges': ...}`
-        :param int bool randomize: a boolean indicating if the new positioni/types of objects should be random
+        :param int bool randomize: a boolean indicating if the new position/types of objects should be random
         :param int random_seed: seed to use for randomize. random_seed < 0 means that seed is not set
         :param bool animate_character: boolean indicating if the added character should be frozen or not.
         :param bool ignore_placing_obstacles: when adding new objects, if the transform is not specified, whether to consider if it collides with existing objects

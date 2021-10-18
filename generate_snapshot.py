@@ -16,7 +16,8 @@ ENV = 2
 # regular expression to get actions
 # zhuoyue: we should match all kinds of ids, not just 1s.
 # also, Griffin's original regular expression prevent things like "standup", so I add the `|\[.+\]`
-re_compiled = re.compile("^\[.+\] <[a-zA-Z_]+> \(\d+\)|\[.+\] <[a-zA-Z_]+> \(\d+(\.\d+)\)|( <[a-zA-Z_]+> \(\d+\)) |\[.+\]$")
+re_compiled = re.compile(
+    "^\[.+\] <[a-zA-Z_]+> \(\d+\)|\[.+\] <[a-zA-Z_]+> \(\d+(\.\d+)\)|( <[a-zA-Z_]+> \(\d+\)) |\[.+\]$")
 
 
 def read_action_file(action_file: str):
@@ -68,16 +69,17 @@ def build_grid_images(images):
     return final_image
 
 
-def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=1, num_char_cameras=2):
+def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_char_cameras=2):
     s, scene_camera_ids = comm.home_capture_camera_ids()
-    cameras_select = [str(i) for i in scene_camera_ids][:num_scene_cameras]
+    # cameras_select = [str(i) for i in scene_camera_ids][:num_scene_cameras]
+    cameras_select = [str(i) for i in scene_camera_ids]
     # s, char_camera_ids = comm.character_cameras()
 
     # because the ids of char cameras starts from 20 (there are 20 scene cameras, 8 character cameras)
     # cameras_select.extend([str(i + len(scene_camera_ids)) for i in range(num_char_cameras)])
     # only show the first camera (id: 0) and the one mounted on the person ( id:28 the 29th camera)
     # cameras_select = ['0', '1', '2', '3', '28']
-    cameras_select = ['1']
+    cameras_select = ['0']
     print(cameras_select)
 
     frame_num = 0
@@ -100,24 +102,39 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=1, num_ch
         # with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
         #     json.dump(graph_state["nodes"], file_obj)
 
-        # new_data = []
-        # # cleaning the data such that we only leave the ids and states (for binary IoT), sorted by id
-        # for data_entry in graph_state["nodes"]:
-        #     local_new = {}
-        #     local_states = data_entry["states"]  # tracking binary for now
-        #     if "ON" in local_states or "OPEN" in local_states:
-        #         local_new["id"] = data_entry["id"]
-        #         local_new["state"] = 1
-        #         local_new["class_name"] = data_entry["class_name"]
-        #         new_data.append(local_new)
-        #     elif "OFF" in local_states or "CLOSED" in local_states:
-        #         local_new["id"] = data_entry["id"]
-        #         local_new["state"] = 0
-        #         local_new["class_name"] = data_entry["class_name"]
-        #         new_data.append(local_new)
-        # sorted_new_data = sorted(new_data, key=lambda i: i["id"])
-        # with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
-        #     json.dump(sorted_new_data, file_obj)
+        new_data = []
+        # cleaning the data such that we only leave the ids and states (for binary IoT), sorted by id
+        for data_entry in graph_state["nodes"]:
+            local_new = {}
+            local_states = data_entry["states"]  # tracking binary for now
+            if "ON" in local_states or "OPEN" in local_states:
+                local_new["id"] = data_entry["id"]
+                local_new["state"] = 1
+                local_new["class_name"] = data_entry["class_name"]
+                new_data.append(local_new)
+            elif "OFF" in local_states or "CLOSED" in local_states:
+                local_new["id"] = data_entry["id"]
+                local_new["state"] = 0
+                local_new["class_name"] = data_entry["class_name"]
+                new_data.append(local_new)
+        sorted_new_data = sorted(new_data, key=lambda i: i["id"])
+
+        _, motion_sensors_distances = comm.get_motion_sensor_states()
+        num_sensors_per_room = 8  # zhuoyue: changeable, currently we have 8 corners per room so
+        threshold = 7  # zhuoyue, because, typically the min distance is 1,0-3.0, max is about 17 or 18.
+        # And when the character stand in the center of the room, the distances to 8 corners are around 6.3 to 6.9
+        latest_id = sorted_new_data[-1]["id"]
+
+        # loop through the motion_sensor_distance
+        dis_list = json.loads(motion_sensors_distances)
+        for i in range(len(dis_list)):
+            local_new = {"id": latest_id + 1 + i,
+                         "state": int(dis_list[i] <= threshold),
+                         "class_name": 'motion_sensor_of_room_{}'.format(i // num_sensors_per_room)}
+            sorted_new_data.append(local_new)
+
+        with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
+            json.dump(sorted_new_data, file_obj)
 
         _, rgb_imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480, image_width=640)
         # _, point_cloud_imgs = comm.camera_image(cameras_select, mode='point_cloud', image_height=480, image_width=640)
