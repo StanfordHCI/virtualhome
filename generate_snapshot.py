@@ -79,7 +79,7 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
     # cameras_select.extend([str(i + len(scene_camera_ids)) for i in range(num_char_cameras)])
     # only show the first camera (id: 0) and the one mounted on the person ( id:28 the 29th camera)
     # cameras_select = ['0', '1', '2', '3', '28']
-    cameras_select = ['0']
+    # cameras_select = ['0']
     print(cameras_select)
 
     frame_num = 0
@@ -137,7 +137,7 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
             json.dump(sorted_new_data, file_obj)
 
         _, rgb_imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480, image_width=640)
-        # _, point_cloud_imgs = comm.camera_image(cameras_select, mode='point_cloud', image_height=480, image_width=640)
+        _, point_cloud_imgs = comm.camera_image(cameras_select, mode='point_cloud', image_height=480, image_width=640)
 
         # Currently Zhengze don't need seg data
         # _, seg_class_imgs = comm.camera_image(cameras_select, mode='seg_class', image_height=480, image_width=640)
@@ -148,9 +148,9 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
                 data = base64.b64decode(rgb_imgs[i])
                 ofs.write(data)
 
-            # with open("{}/{}-{}-point_cloud.exr".format(output, frame_num, i), 'wb') as ofs:
-            #     data = base64.b64decode(point_cloud_imgs[i])
-            #     ofs.write(data)
+            with open("{}/{}-{}-point_cloud.exr".format(output, frame_num, i), 'wb') as ofs:
+                data = base64.b64decode(point_cloud_imgs[i])
+                ofs.write(data)
 
             # with open("{}/{}-{}-seg_class.png".format(output, frame_num, i), 'wb') as ofs:
             #     data = base64.b64decode(seg_class_imgs[i])
@@ -191,7 +191,8 @@ if message == 'Script is executable':
         os.mkdir(output)
     # the last two argument is about the number of cameras for scene (static) and character (moving with the person)
     # scene cameras (20 in total): [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-    # character cameras (8 in total): ["PERSON_FRONT","PERSON_TOP","FIRST_PERSON","PERSON_FROM_BACK","PERSON_FROM_LEFT","PERSON_RIGHT","PERSON_LEFT","PERSON_BACK"]
+    # character cameras (8 in total):
+    # ["PERSON_FRONT","PERSON_TOP","FIRST_PERSON","PERSON_FROM_BACK","PERSON_FROM_LEFT","PERSON_RIGHT","PERSON_LEFT","PERSON_BACK"]
     # if you do the `comm.add_character_camera()` before, there will be another "new_camera" at the end of the list
     obtain_snapshots(graph_state_list, comm, output)
 else:

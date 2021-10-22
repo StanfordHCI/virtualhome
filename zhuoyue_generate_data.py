@@ -15,9 +15,11 @@ class DataGenerator():
 
         # TODO
         # it's weird that it doesn't support "find"
-        # also, 2 we don't know if something is grabbed twice, os I just remove it. also PUTIN has error without grab also Drink, also sit...
+        # also, 2 we don't know if something is grabbed twice, os I just remove it.
+        # also PUTIN has error without grab also Drink, also sit...
         # "Script is not executable, since Too many things on <chair> (1012) when executing "[SIT] <chair> (1012) [92]""
-        #  3 Script is not executable, since <character> (1) does not face <couch> (1006) when executing "[LOOKAT] <couch> (1006) [37]"
+        #  3 Script is not executable, since <character> (1) does not face <couch>
+        #  (1006) when executing "[LOOKAT] <couch> (1006) [37]"
         # so I remove the lookat
         self.available_actions = ["walk", "run", "walktowards", "walkforward",
                                   "turnleft", "turnright", "standup",
@@ -37,7 +39,10 @@ class DataGenerator():
             "living_room": "home_office",
             "kids_bedroom": "bedroom"
         }
-        self.local_on_off_dic = {}
+        # this will keep track of all the open and close states of appliances (such as the fridge)
+        # so we don't open something when it's already opened (would cause trouble on the Unity side)
+        self.open_close_dic = {}
+        self.switch_on_off_dic = {}
         self.actions = []
         self.curr_room = ''
 
@@ -94,58 +99,80 @@ class DataGenerator():
         self.actions.extend(temp_lst)
         return
 
+    # def deal_with_on_off(self, dic, obj, action):
+    #     """
+    #     # make sure don't open something when it's already opened, or close twice
+    #     """
+    #     if obj in dic:
+    #         if dic[obj] == action:
+    #             continue
+    #     else:
+    #         return action
+
     def read_action_file(self, action_file: str):
         with open(action_file, 'r') as obj:
             for line in obj:
                 # get the action string
-                obj_match = line[line.find("<") + 1:line.find(">")]
-                action_match = line[line.find("[") + 1:line.find("]")]
+                obj_match = line[line.find("<") + 1:line.find(">")].lower()
+                action_match = line[line.find("[") + 1:line.find("]")].lower()
                 # if not action_match or not obj_match:
                 if obj_match == action_match:  # if they are equal, this line is a text line, not command
                     continue
-                if action_match.lower() in self.available_actions:
-                    if obj_match.lower() in self.available_rooms:
+                if action_match in self.available_actions:
+                    # 1. deal with object
+                    if obj_match in self.available_rooms:
                         self.deal_with_room(obj_match, line)
-                    # Script is not executable, since <sink> (156) can not be opened when executing "[OPEN] <sink> (156) [97]"
-                    if obj_match.lower() == 'sink':
+                    # Script is not executable, since <sink> (156)
+                    # can not be opened when executing "[OPEN] <sink> (156) [97]"
+                    if obj_match == 'sink':
                         continue
                     # <dishwasher> (166) is still on when executing "[OPEN] <dishwasher> (166) [330]"
-                    if obj_match.lower() == 'dishwasher' and \
-                            (action_match.lower() == 'open' or action_match.lower() == 'close'):
-                        continue
-                    if obj_match.lower() not in html_list:
-                        continue
+                    # if obj_match == 'dishwasher' and \
+                    #         (action_match == 'open' or action_match == 'close'):
+                    #     continue
 
-                    if obj_match.lower() == 'lightswitch':  # make sure the lights are not switch twice
+                    if obj_match not in html_list:
+                        continue
+                    # does not have a switch when executing "[SWITCHON] <filing_cabinet> (1008) [37]"
+                    if obj_match in ['kitchen_cabinet',
+                                     'cupboard',
+                                     'filing_cabinet'] and action_match in ['switchon',
+                                                                            'switchoff']:  # they don't have switch on
+                        continue
+                    if obj_match == 'lightswitch':  # make sure the lights are not switch twice
                         id_match = int(line[line.find("(") + 1:line.find(")")])
-                        if action_match.lower() == 'switchon' and self.lights_states[id_match] == 1:
+                        if action_match == 'switchon' and self.lights_states[id_match] == 1:
                             continue
-                        elif action_match.lower() == 'switchoff' and self.lights_states[id_match] == 0:
+                        elif action_match == 'switchoff' and self.lights_states[id_match] == 0:
                             continue
-                    else:
-                        if obj_match.lower() == 'kitchen_cabinet' or obj_match.lower() == 'cupboard':  # it doesn't have switch on..so
-                            continue
-                        if action_match.lower() == 'switchon':
-                            if obj_match.lower() in self.local_on_off_dic:
-                                if self.local_on_off_dic[obj_match.lower()] != 0:
-                                    continue
-                            else:
-                                self.local_on_off_dic[obj_match.lower()] = 1
-                        if action_match.lower() == 'switchoff':
-                            if obj_match.lower() in self.local_on_off_dic:
-                                if self.local_on_off_dic[obj_match.lower()] != 1:
-                                    continue
-                            else:
-                                self.local_on_off_dic[obj_match.lower()] = 0
-
-                        if action_match.lower() == 'find':
-                            self.actions.append('[Walk] <{}> (1)'.format(obj_match))
-                        if action_match.lower() == 'standup':
-                            continue  # just remove the existed standup, so it won't duplidate with our code
-                        self.actions.append(line.strip())  # only add lines that uses available actions
-                        if action_match.lower() == 'sit':
-                            self.actions.append('[Standup]')
-
+                    # 2. deal with action
+                    if action_match == 'standup':
+                        continue  # just remove the existed standup, so it won't duplidate with our code
+                    elif action_match == 'sit':
+                        self.actions.append('[Standup]')
+                    elif action_match == 'switchon':
+                        if obj_match in self.switch_on_off_dic:
+                            if self.switch_on_off_dic[obj_match] == 1:
+                                continue  # skip this line if the target appliance is already opened
+                        self.switch_on_off_dic[obj_match] = 1
+                    elif action_match == 'switchoff':
+                        if obj_match in self.switch_on_off_dic:
+                            if self.switch_on_off_dic[obj_match] == 0:
+                                continue
+                        self.switch_on_off_dic[obj_match] = 0
+                    elif action_match == 'open':
+                        if obj_match in self.open_close_dic:
+                            if self.open_close_dic[obj_match] == 1:
+                                continue
+                        self.open_close_dic[obj_match] = 1
+                    elif action_match == 'close':
+                        if obj_match in self.open_close_dic:
+                            if self.open_close_dic[obj_match] == 0:
+                                continue
+                        self.open_close_dic[obj_match] = 0
+                    elif action_match == 'find':
+                        self.actions.append('[Walk] <{}> (1)'.format(obj_match))
+                    self.actions.append(line.strip())  # only add lines that uses available actions
         return self.actions
 
     def run(self, selected_num_files, total_num_files, curr_room):
@@ -160,7 +187,8 @@ class DataGenerator():
         self.curr_room = curr_room
         self.doors_states = [1, 1, 1, 1]
         self.lights_states = [1, 1, 1, 1]
-        # Bed removed....Script is not executable, since <character> (1) is not close to <bed> (284) when executing "[FIND] <bed> (284) [2]"
+        # Bed removed....Script is not executable, since <character> (1)
+        # is not close to <bed> (284) when executing "[FIND] <bed> (284) [2]"
         # '[Find] <bed> (1)',
         wakeup = [
             '[Walk] <bedroom> (1)',
@@ -200,8 +228,8 @@ if __name__ == '__main__':
             html_list.append(item.lower())
 
     g = DataGenerator(path)
-    for i in range(10):
-        g.run(selected_num_files=80, total_num_files=1186, curr_room='bedroom')
+    for i in range(1):
+        g.run(selected_num_files=10, total_num_files=1186, curr_room='bedroom')
         textfile = open("./Output-zhuoyue-generate-data/{}.txt".format(i), "w")
         for element in g.actions:
             textfile.write(element + "\n")

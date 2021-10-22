@@ -1,0 +1,651 @@
+@ARTICLE{8371286,
+  author={Hohman, Fred and Kahng, Minsuk and Pienta, Robert and Chau, Duen Horng},
+  journal={IEEE Transactions on Visualization and Computer Graphics}, 
+  title={{Visual Analytics in Deep Learning: An Interrogative Survey for the Next Frontiers}}, 
+  year={2019},
+  volume={25},
+  number={8},
+  pages={2674-2693},
+  url={https://doi.org/10.1109/TVCG.2018.2843369},
+  doi={10.1109/TVCG.2018.2843369}}
+
+@article{ruder2016overview,
+  title={{An overview of gradient descent optimization algorithms}},
+  author={Ruder, Sebastian},
+  journal={arXiv preprint arXiv:1609.04747},
+  url={https://arxiv.org/pdf/1609.04747.pdf},
+  year={2016}
+}
+
+@article{hinton2012neural,
+  title={{Neural networks for machine learning lecture 6a overview of mini-batch gradient descent}},
+  author={Hinton, Geoffrey and Srivastava, Nitish and Swersky, Kevin},
+  journal={Cited on},
+  volume={14},
+  number={8},
+  pages={2},
+  url={https://web.archive.org/web/20211018165553/https://www.cs.toronto.edu/~tijmen/csc321/slides/lecture_slides_lec6.pdf},
+  year={2012}
+}
+
+
+@misc{Transmission_Control_Protocol,
+   author = "Wikipedia",
+   title = "{{Transmission Control Protocol}} --- {{W}}ikipedia{{,}} The Free Encyclopedia",
+   year = "2021",
+   howpublished = {\url{https://en.wikipedia.org/wiki/Transmission_Control_Protocol}},
+   note = "[Online; accessed 20-October-2021]"
+ } 
+ 
+ @misc{unity, 
+ title="{{Unity Real-Time Development Platform | 3D, 2D VR and AR Engine}}", 
+ url={https://web.archive.org/web/20211020091658/https://unity.com/}, 
+ journal={Unity}, 
+ author={Unity}
+ } 
+
+ @misc{oculus, 
+ title="{{Oculus Quest VR headset}}", url={{https://web.archive.org/web/20211018111646/https://www.oculus.com/quest/features/}}, 
+ journal={Oculus}, 
+ author={Oculus}
+ } 
+
+@inproceedings{10.1145/1978942.1979193,
+author = {Diakopoulos, Nicholas and Kivran-Swaine, Funda and Naaman, Mor},
+title = {{Playable Data: Characterizing the Design Space of Game-y Infographics}},
+year = {2011},
+isbn = {9781450302289},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1978942.1979193},
+doi = {10.1145/1978942.1979193},
+abstract = {This work explores the intersection between infographics and games by examining how
+to embed meaningful visual analytic interactions into game mechanics that in turn
+impact user behavior around a data-driven graphic. In contrast to other methods of
+narrative visualization, games provide an alternate method for structuring a story,
+not bound by a linear arrangement but still providing structure via rules, goals,
+and mechanics of play. We designed two different versions of a game-y infographic,
+Salubrious Nation, and compared them to a non-game-y version in an online experiment.
+We assessed the relative merits of the game-y approach of presentation in terms of
+exploration of the visualization, insights and learning, and enjoyment of the experience.
+Based on our results, we discuss some of the benefits and drawbacks of our designs.
+More generally, we identify challenges and opportunities for further exploration of
+this new design space.},
+booktitle = {{Proceedings of the SIGCHI Conference on Human Factors in Computing Systems}},
+pages = {1717–1726},
+numpages = {10},
+keywords = {games, infographics, interaction science, visual analytics},
+location = {Vancouver, BC, Canada},
+series = {CHI '11}
+}
+ 
+ @article{susskind2010toronto,
+  title={{The toronto face database}},
+  author={Susskind, Josh M and Anderson, Adam K and Hinton, Geoffrey E},
+  journal={Department of Computer Science, University of Toronto, Toronto, ON, Canada, Tech. Rep},
+  volume={3},
+  url="https://zhuoyuelyu.github.io/AIive/toronto_face.npz",
+  year={2010}
+}
+ 
+ @misc{grosse, title={{CSC 311 Fall 2020: Introduction to Machine Learning}}, 
+ journal={University of Toronto}, url={https://web.archive.org/web/20211020015616/https://www.cs.toronto.edu/~rgrosse/courses/csc311_f20/}, 
+ publisher={University of Toronto}, author={Grosse, Roger}} 
+
+@book{10.5555/541500,
+author = {Haykin, Simon},
+title = {{Neural Networks: A Comprehensive Foundation}},
+year = {1994},
+isbn = {0023527617},
+publisher = {Prentice Hall PTR},
+address = {USA},
+edition = {1st},
+abstract = {From the Publisher:This book represents the most comprehensive treatment available
+of neural networks from an engineering perspective. Thorough, well-organized, and
+completely up to date, it examines all the important aspects of this emerging technology,
+including the learning process, back-propagation learning, radial-basis function networks,
+self-organizing systems, modular networks, temporal processing and neurodynamics,
+and VLSI implementation of neural networks. Written in a concise and fluid manner,
+by a foremost engineering textbook author, to make the material more accessible, this
+book is ideal for professional engineers and graduate students entering this exciting
+field. Computer experiments, problems, worked examples, a bibliography, photographs,
+and illustrations reinforce key concepts.}
+}
+
+@inproceedings{atherton2018chunity,
+  title={{Chunity: Integrated Audiovisual Programming in Unity}},
+  author={Atherton, Jack and Wang, Ge},
+  booktitle={{NIME}},
+  url={https://www.nime.org/proceedings/2018/nime2018_paper0024.pdf},
+  pages={102--107},
+  year={2018}
+}
+
+
+@INPROCEEDINGS{6126903,
+  author={Dublon, Gershon and Pardue, Laurel S. and Mayton, Brian and Swartz, Noah and Joliat, Nicholas and Hurst, Patrick and Paradiso, Joseph A.},
+  booktitle={{SENSORS, 2011 IEEE}}, 
+  title={{DoppelLab: Tools for exploring and harnessing multimodal sensor network data}}, 
+  year={2011},
+  volume={},
+  number={},
+  pages={1612-1615},
+  abstract={We present DoppelLab, an immersive sensor data browser built on a 3-d game engine. DoppelLab unifies independent sensor networks and data sources within the spatial framework of a building. Animated visualizations and sonifications serve as representations of real-time data within the virtual space.},
+  keywords={},
+  doi={10.1109/ICSENS.2011.6126903},
+  url="https://doi.org/10.1109/ICSENS.2011.6126903",
+  ISSN={1930-0395},
+  month={Oct}
+  }
+
+@ARTICLE{774840,
+  author={Kaper, H.G. and Wiebel, E. and Tipei, S.},
+  journal={Computing in Science and Engineering}, 
+  title={{Data sonification and sound visualization}}, 
+  year={1999},
+  volume={1},
+  number={4},
+  pages={48-58},
+  abstract={Sound can help us explore and analyze complex data sets in scientific computing. The authors describe a digital instrument for additive sound synthesis (Diass) and a program to visualize sounds in a virtual reality environment (M4Cave). Both are part of a comprehensive music composition environment that includes additional software for computer-assisted composition and automatic music notation.},
+  keywords={},
+  doi={10.1109/5992.774840},
+  url="https://doi.org/10.1109/5992.774840",
+  ISSN={1558-366X},
+  month={July},}
+  
+  
+@inproceedings{Papachristodoulou2014SonificationOL,
+  title={{Sonification of Large Datasets in a 3D Immersive Environment: A Neuroscience Case Study}},
+  url={http://www.thinkmind.org/download.php?articleid=achi_2014_2_20_20146},
+  author={Panagiota Papachristodoulou and Alberto Betella and Paul Verschure},
+  booktitle={{ACHI 2014}},
+  year={2014}
+}
+
+@article{kramer2010sonification,
+  title={{Sonification report: Status of the field and research agenda}},
+  author={Kramer, Gregory and Walker, Bruce and Bonebright, Terri and Cook, Perry and Flowers, John H and Miner, Nadine and Neuhoff, John},
+  year={2010},
+  url = {https://digitalcommons.unl.edu/psychfacpub/444/}
+}
+
+@inproceedings{r2019hearing,
+  title={{Hearing artificial intelligence: Sonification guidelines \& results from a case-study in melanoma diagnosis}},
+  author={R Michael, Winters and Kalra, Ankur and Walker, Bruce N},
+  year={2019},
+  organization={Georgia Institute of Technology},
+  url = {https://doi.org/10.21785/icad2019.021}
+}
+
+@inproceedings{10.1145/1873951.1874219,
+author = {Valenti, Roberto and Jaimes, Alejandro and Sebe, Nicu},
+title = {{Sonify Your Face: Facial Expressions for Sound Generation}},
+year = {2010},
+isbn = {9781605589336},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/1873951.1874219},
+doi = {10.1145/1873951.1874219},
+abstract = {We present a novel visual creativity tool that automatically recognizes facial expressions
+and tracks facial muscle movements in real time to produce sounds. The facial expression
+recognition module detects and tracks a face and outputs a feature vector of motions
+of specific locations in the face. The feature vector is used as input to a Bayesian
+network which classifies facial expressions into several categories (e.g., angry,
+disgusted, happy, etc.). The classification results are used along with the feature
+vector to generate a combination of sounds that change in real time depending on the
+person's facial expressions. We explain the artistic motivation behind the work, the
+basic components of our tool, and possible applications in the arts (performance,
+installation) and in the medical domain. Finally, we report on the experience of approximately
+25 users of our system at a conference demonstration session, of 9 participants in
+a pilot study to assess the system's usability, and discuss our experience installing
+the work at an important digital arts festival (RE-NEW 2009).},
+booktitle = {{Proceedings of the 18th ACM International Conference on Multimedia}},
+pages = {1363–1372},
+numpages = {10},
+keywords = {multimodal interface, gesture-based interaction, sonification, facial therapy interface, affective computing, facial expressions},
+location = {Firenze, Italy},
+series = {MM '10}
+}
+
+@inproceedings{10.1145/3429290.3429307,
+author = {Nath, Surabhi},
+title = {{Hear Her Fear: Data Sonification for Sensitizing Society on Crime Against Women in India}},
+year = {2020},
+isbn = {9781450389440},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3429290.3429307},
+doi = {10.1145/3429290.3429307},
+abstract = { Data sonification is a means of representing data through sound and has been utilized
+in a variety of applications. Crime against women has been a rising concern in India.
+We explore the potential of data sonification to provide an immersive engagement with
+sensitive data on crime against women in Indian states. The data for nine crime categories
+covering thirty-five Indian states over a period of twelve years is acquired from
+National records. Sonification techniques of parameter mapping and auditory icons
+are adopted: sound parameters such as frequencies, amplitudes and timbres are incorporated
+to represent the crime data, and audio sounds of women screams are employed as auditory
+icons to emphasize the traumatic experience. Higher crime rates are assigned higher
+frequencies, harsher scream textures and larger amplitudes. A user-friendly interface
+is developed with multiple options for sequential and comparative data sonification.
+Through the interface, a user can evaluate and compare the extent of crime against
+women in different states, years or crime categories. Sound spatialization is used
+to immerse the listener in the sound and further intensify the sonification experience.
+To assess and validate effectiveness, a user study on twenty participants is conducted
+with feedback obtained through questionnaires. The responses indicate that the participants
+could comprehend trends in the data easily and found the data sonification experience
+impactful. Sonification may therefore prove to be a valuable tool for data representation
+in fields related to social and human studies.},
+booktitle = {{IndiaHCI '20: Proceedings of the 11th Indian Conference on Human-Computer Interaction}},
+pages = {86–91},
+numpages = {6},
+keywords = {Sound spatialization, User study, Parameter mapping, Auditory icons, Data sonification, Crime against women, User interface},
+location = {Online, India},
+series = {IndiaHCI 2020}
+}
+
+@book{de1999sonification,
+  title={{Sonification of social data}},
+  author={de Campo, Alberto},
+  year={1999},
+  url={http://hdl.handle.net/2027/spo.bbp2372.1999.397},
+  publisher={Ann Arbor, MI: Michigan Publishing, University of Michigan Library}
+}
+
+@misc{fazi2016feed,
+  title={{Feed-Forward: On the Future of Twenty-First-Century Media}},
+  author={Fazi, M Beatrice},
+  year={2016},
+  url={https://press.uchicago.edu/ucp/books/book/chicago/F/bo19211873.html},
+  publisher={67 DIGSBY CRESCENT, LONDON N4 2HS, ENGLAND}
+}
+
+@misc{smilkov2017directmanipulation,
+      title={{Direct-Manipulation Visualization of Deep Networks}}, 
+      author={Daniel Smilkov and Shan Carter and D. Sculley and Fernanda B. Viégas and Martin Wattenberg},
+      year={2017},
+      eprint={1708.03788},
+      archivePrefix={arXiv},
+      url="https://arxiv.org/abs/1708.03788",
+      primaryClass={cs.LG}
+}
+
+@ARTICLE{8440049,
+  author={Kahng, Minsuk and Thorat, Nikhil and Chau, Duen Horng and Viégas, Fernanda B. and Wattenberg, Martin},
+  journal={IEEE Transactions on Visualization and Computer Graphics}, 
+  title={{GAN Lab: Understanding Complex Deep Generative Models using Interactive Visual Experimentation}}, 
+  year={2019},
+  volume={25},
+  number={1},
+  pages={310-320},
+  abstract={Recent success in deep learning has generated immense interest among practitioners and students, inspiring many to learn about this new technology. While visual and interactive approaches have been successfully developed to help people more easily learn deep learning, most existing tools focus on simpler models. In this work, we present GAN Lab, the first interactive visualization tool designed for non-experts to learn and experiment with Generative Adversarial Networks (GANs), a popular class of complex deep learning models. With GAN Lab, users can interactively train generative models and visualize the dynamic training process's intermediate results. GAN Lab tightly integrates an model overview graph that summarizes GAN's structure, and a layered distributions view that helps users interpret the interplay between submodels. GAN Lab introduces new interactive experimentation features for learning complex deep learning models, such as step-by-step training at multiple levels of abstraction for understanding intricate training dynamics. Implemented using TensorFlow.js, GAN Lab is accessible to anyone via modern web browsers, without the need for installation or specialized hardware, overcoming a major practical challenge in deploying interactive tools for deep learning.},
+  keywords={},
+  doi={10.1109/TVCG.2018.2864500},
+  url="https://doi.org/10.1109/TVCG.2018.2864500",
+  ISSN={1941-0506},
+  month={Jan},}
+
+@article{candel2016deep,
+  title={{Deep learning with H2O}},
+  author={Candel, Arno and Parmar, Viraj and LeDell, Erin and Arora, Anisha},
+  journal={H2O. ai Inc},
+  pages={1--21},
+  url="https://web.archive.org/web/20211018215342/https://www.h2o.ai/",
+  year={2016}
+}
+
+@inproceedings{10.1145/3379336.3381474,
+author = {Wang, Dakuo and Ram, Parikshit and Weidele, Daniel Karl I. and Liu, Sijia and Muller, Michael and Weisz, Justin D. and Valente, Abel and Chaudhary, Arunima and Torres, Dustin and Samulowitz, Horst and Amini, Lisa},
+title = {{AutoAI: Automating the End-to-End AI Lifecycle with Humans-in-the-Loop}},
+year = {2020},
+isbn = {9781450375139},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3379336.3381474},
+doi = {10.1145/3379336.3381474},
+abstract = {Automated Artificial Intelligence and Machine Learning (AutoAI / AutoML) can now automate
+every step of the end-to-end AI Lifecycle, from data cleaning, to algorithm selection,
+and to model deployment and monitoring in the machine learning workflow. AutoAI technologies,
+initially aimed to save data scientists from the low level coding tasks, also has
+great potential to serve non-technical users such as domain experts and business users
+to build and deploy machine learning models. Researchers coined it as "democratizing
+AI", where non-technical users are empowered by AutoAI technologies to create and
+adopt AI models. To realize such promise, AutoAI needs to translate and incorporate
+the real-world business logic and requirements into the automation. In this Demo,
+we present a first of its kinds experimental system, IBM AutoAI Playground, that enables
+non-technical users to define and customize their business goals (e.g., Prediction
+Time) as constraints. AutoAI then builds models to satisfy those constraints while
+optimizing for the model performance (e.g., ROC AUC score). This Demo also showcases
+AutoAIViz, a Conditional Parallel Coordinates visualization feature, and a TrustedAI
+feature from two accepted IUI'20 papers.},
+booktitle = {{Proceedings of the 25th International Conference on Intelligent User Interfaces Companion}},
+pages = {77–78},
+numpages = {2},
+keywords = {democratizing AI, business constraints, AutoML, stakeholder constraints, parallel coordinates, human-AI collaboration, AutoAI},
+location = {Cagliari, Italy},
+series = {IUI '20}
+}
+
+@book{+2020,
+author = {},
+editor = {Andreas Sudmann},
+doi = {doi:10.14361/9783839447192},
+doi = {doi:10.14361/9783839447192},
+url = {https://doi.org/10.14361/9783839447192},
+title = {{The Democratization of Artificial Intelligence: Net Politics in the Era of Learning Algorithms}},
+year = {2020},
+publisher = {transcript Verlag},
+ISBN = {9783839447192}
+}
+
+
+@misc{vanhorn2019deep,
+      title={{Deep Learning Development Environment in Virtual Reality}}, 
+      author={Kevin C. VanHorn and Meyer Zinn and Murat Can Cobanoglu},
+      year={2019},
+      url={https://arxiv.org/abs/1906.05925},
+      eprint={1906.05925},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+
+@inproceedings{10.1145/3170427.3188537,
+author = {Millais, Patrick and Jones, Simon L. and Kelly, Ryan},
+title = {{Exploring Data in Virtual Reality: Comparisons with 2D Data Visualizations}},
+year = {2018},
+isbn = {9781450356213},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3170427.3188537},
+doi = {10.1145/3170427.3188537},
+abstract = {Virtual Reality (VR) has often been discussed as a promising medium for immersive
+data visualization and exploration. However, few studies have evaluated users' open-ended
+exploration of multi-dimensional datasets using VR and compared the results with that
+of traditional (2D) visualizations. Using a workload- and insight-based evaluation
+methodology, we conducted a user study to perform such a comparison. We find that
+there is no overall task-workload difference between traditional visualizations and
+visualizations in VR, but there are differences in the accuracy and depth of insights
+that users gain. Our results also suggest that users feel more satisfied and successful
+when using VR data exploration tools, thus demonstrating the potential of VR as an
+engaging medium for visual data analytics.},
+booktitle = {{Extended Abstracts of the 2018 CHI Conference on Human Factors in Computing Systems}},
+pages = {1–6},
+numpages = {6},
+keywords = {data dashboards, virtual reality, data visualisation},
+location = {Montreal QC, Canada},
+series = {CHI EA '18}
+}
+
+@article{tadeja_seshadri_kristensson_2020, title={{AeroVR: An immersive visualisation system for aerospace design and digital twinning in virtual reality}}, volume={124}, 
+DOI={10.1017/aer.2020.49}, 
+url={https://doi.org/10.1017/aer.2020.49},
+number={1280}, journal={The Aeronautical Journal}, publisher={Cambridge University Press}, author={Tadeja, S.K. and Seshadri, P. and Kristensson, P.O.}, year={2020}, pages={1615–1635}}
+
+@inproceedings{10.1145/3379337.3415878,
+author = {Hayatpur, Devamardeep and Xia, Haijun and Wigdor, Daniel},
+title = {{DataHop: Spatial Data Exploration in Virtual Reality}},
+year = {2020},
+isbn = {9781450375146},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/3379337.3415878},
+doi = {10.1145/3379337.3415878},
+abstract = {Virtual reality has recently been adopted for use within the domain of visual analytics
+because it can provide users with an endless workspace within which they can be actively
+engaged and use their spatial reasoning skills for data analysis. However, virtual
+worlds need to utilize layouts and organizational schemes that are meaningful to the
+user and beneficial for data analysis. This paper presents DataHop, a novel visualization
+system that enables users to lay out their data analysis steps in a virtual environment.
+With a Filter, a user can specify the modification they wish to perform on one or
+more input data panels (i.e., containers of points), along with where output data
+panels should be placed in the virtual environment. Using this simple tool, highly
+intricate and useful visualizations may be generated and traversed by harnessing a
+user's spatial abilities. An exploratory study conducted with six virtual reality
+users evaluated the usability, affordances, and performance of DataHop for data analysis
+tasks, and found that spatially mapping one's workflow can be beneficial when exploring
+multidimensional datasets.},
+booktitle = {{Proceedings of the 33rd Annual ACM Symposium on User Interface Software and Technology}},
+pages = {818–828},
+numpages = {11},
+keywords = {immersive data visualization, spatial skills},
+location = {Virtual Event, USA},
+series = {UIST '20}
+}
+
+@article{SYLAIOU2010243,
+title = {{Exploring the relationship between presence and enjoyment in a virtual museum}},
+journal = {International Journal of Human-Computer Studies},
+volume = {68},
+number = {5},
+pages = {243-253},
+year = {2010},
+issn = {1071-5819},
+doi = {https://doi.org/10.1016/j.ijhcs.2009.11.002},
+url = {https://www.sciencedirect.com/science/article/pii/S1071581909001761},
+author = {Stella Sylaiou and Katerina Mania and Athanasis Karoulis and Martin White},
+keywords = {Presence, Virtual museum, User study, Usability.},
+abstract = {The Augmented Representation of Cultural Objects (ARCO) system, developed as a part of an EU ICT project, provides museum curators with software and interface tools to develop web-based virtual museum exhibitions by integrating augmented reality (AR) and 3D computer graphics. ARCO technologies could also be deployed in order to implement educational kiosks placed in real-world museums. The main purpose of the system is to offer an entertaining, informative and enjoyable experience to virtual museum visitors. This paper presents a formal usability study that has been undertaken in order to explore participants’ perceived ‘sense of being there’ and enjoyment while exposed to a virtual museum exhibition in relation to real-world visits. The virtual museum implemented was based on an existing gallery in the Victoria and Albert Museum, London, UK. It is of interest to determine whether a high level of presence results in enhanced enjoyment. After exposure to the system, participants completed standardized presence questionnaires related to the perceived realism of cultural artifacts referred to as AR objects’ presence, as well as to participants’ generic perceived presence in the virtual museum referred to as VR presence. The studies conducted indicate that previous experience with ICTs (Information and Communication Technologies) did not correlate with perceived AR objects’ presence or VR presence while exposed to a virtual heritage environment. Enjoyment and both AR objects’ presence and VR presence were found to be positively correlated. Therefore, a high level of perceived presence could be closely associated with satisfaction and gratification which contribute towards an appealing experience while interacting with a museum simulation system.}
+}
+
+@ARTICLE{4287241,
+  author={Bowman, Doug A. and McMahan, Ryan P.},
+  journal={Computer}, 
+  title={{Virtual Reality: How Much Immersion Is Enough?}}, 
+  year={2007},
+  volume={40},
+  number={7},
+  pages={36-43},
+  abstract={Solid evidence of virtual reality's benefits has graduated from impressive visual demonstrations to producing results in practical applications. Further, a realistic experience is no longer immersion's sole asset. Empirical studies show that various components of immersion provide other benefits - full immersion is not always necessary. The goal of immersive virtual environments (VEs) was to let the user experience a computer-generated world as if it were real - producing a sense of presence, or "being there," in the user's mind.},
+  keywords={},
+  url="https://doi.org/10.1109/MC.2007.257",
+  doi={10.1109/MC.2007.257},
+  ISSN={1558-0814},
+  month={July},}
+  
+@InProceedings{10.1007/978-3-319-27857-5_77,
+author="Harley, Adam W.",
+editor="Bebis, George
+and Boyle, Richard
+and Parvin, Bahram
+and Koracin, Darko
+and Pavlidis, Ioannis
+and Feris, Rogerio
+and McGraw, Tim
+and Elendt, Mark
+and Kopper, Regis
+and Ragan, Eric
+and Ye, Zhao
+and Weber, Gunther",
+title="{{An Interactive Node-Link Visualization of Convolutional Neural Networks}}",
+booktitle="Advances in Visual Computing",
+year="2015",
+publisher="Springer International Publishing",
+address="Cham",
+pages="867--877",
+url={https://doi.org/10.1007/978-3-319-27857-5_77},
+abstract="Convolutional neural networks are at the core of state-of-the-art approaches to a variety of computer vision tasks. Visualizations of neural networks typically take the form of static diagrams, or interactive toy-sized networks, which fail to illustrate the networks' scale and complexity, and furthermore do not enable meaningful experimentation. Motivated by this observation, this paper presents a new interactive visualization of neural networks trained on handwritten digit recognition, with the intent of showing the actual behavior of the network given user-provided input. The user can interact with the network through a drawing pad, and watch the activation patterns of the network respond in real-time. The visualization is available at http://scs.ryerson.ca/{\textasciitilde}aharley/vis/.",
+isbn="978-3-319-27857-5"
+}
+
+@Inbook{Zell1994,
+author="Zell, Andreas
+and Mache, Niels
+and H{\"u}bner, Ralf
+and Mamier, G{\"u}nter
+and Vogt, Michael
+and Schmalzl, Michael
+and Herrmann, Kai-Uwe",
+editor="Skrzypek, Josef",
+title="SNNS (Stuttgart Neural Network Simulator)",
+bookTitle="Neural Network Simulation Environments",
+year="1994",
+publisher="Springer US",
+address="Boston, MA",
+pages="165--186",
+abstract="We here describe SNNS, a neural network simulator for Unix workstations that has been developed at the University of Stuttgart, Germany. Our network simulation environment is a tool to generate, train, test, and visualize artificial neural networks. The simulator consists of three major components: a simulator kernel that operates on the internal representation of the neural networks, a graphical user interface based on X-Windows to interactively create, modify and visualize neural nets, and a compiler to generate large neural networks from a high level network description language.",
+isbn="978-1-4615-2736-7",
+doi="10.1007/978-1-4615-2736-7_9",
+url="https://doi.org/10.1007/978-1-4615-2736-7_9"
+}
+
+@ARTICLE{10.3389/fcomm.2020.00046,
+  
+AUTHOR={Sawe, Nik and Chafe, Chris and Treviño, Jeffrey},   
+	 
+TITLE={Using Data Sonification to Overcome Science Literacy, Numeracy, and Visualization Barriers in Science Communication},      
+	
+JOURNAL={Frontiers in Communication},      
+	
+VOLUME={5},      
+
+PAGES={46},     
+	
+YEAR={2020},      
+	  
+URL={https://www.frontiersin.org/article/10.3389/fcomm.2020.00046},       
+	
+DOI={10.3389/fcomm.2020.00046},      
+	
+ISSN={2297-900X},   
+   
+ABSTRACT={Sharing the complex narratives within scientific data in an intuitive fashion has proven difficult, especially for communicators endeavoring to reach a wide audience comprised of individuals with differing levels of scientific knowledge and mathematical ability. We discuss the application of data sonification—the process of translating data into sound, sometimes in a musical context—as a method of overcoming barriers to science communication. Data sonification can convey large datasets with many dimensions in an efficient and engaging way that reduces scientific literacy and numeracy barriers to understanding the underlying scientific data. This method is particularly beneficial for its ability to portray scientific data to those with visual impairments, who are often unable to engage with traditional data visualizations. We explore the applications of data sonification for science communicators and researchers alike, as well as considerations for making sonified data accessible and engaging to broad audiences with diverse levels of expertise.}
+}
+
+
+
+@article{lecun_deep_2015,
+	title = {{Deep learning}},
+	volume = {521},
+	issn = {1476-4687},
+	url = {https://doi.org/10.1038/nature14539},
+	doi = {10.1038/nature14539},
+	abstract = {Deep learning allows computational models that are composed of multiple processing layers to learn representations of data with multiple levels of abstraction. These methods have dramatically improved the state-of-the-art in speech recognition, visual object recognition, object detection and many other domains such as drug discovery and genomics. Deep learning discovers intricate structure in large data sets by using the backpropagation algorithm to indicate how a machine should change its internal parameters that are used to compute the representation in each layer from the representation in the previous layer. Deep convolutional nets have brought about breakthroughs in processing images, video, speech and audio, whereas recurrent nets have shone light on sequential data such as text and speech.},
+	pages = {436--444},
+	number = {7553},
+	journaltitle = {{Nature}},
+	shortjournal = {Nature},
+	author = {{LeCun}, Yann and Bengio, Yoshua and Hinton, Geoffrey},
+	date = {2015-05-01},
+}
+
+@InProceedings{pmlr-v123-herrmann20a,
+  title = 	 {{Visualizing and sonifying how an artificial ear hears music}},
+  author =       {Herrmann, Vincent},
+  booktitle = 	 {{Proceedings of the NeurIPS 2019 Competition and Demonstration Track}},
+  pages = 	 {192--202},
+  year = 	 {2020},
+  editor = 	 {Escalante, Hugo Jair and Hadsell, Raia},
+  volume = 	 {123},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {08--14 Dec},
+  publisher =    {PMLR},
+  pdf = 	 {http://proceedings.mlr.press/v123/herrmann20a/herrmann20a.pdf},
+  url = 	 {https://proceedings.mlr.press/v123/herrmann20a.html},
+  abstract = 	 { A system is presented that visualizes and sonifies the inner workings of a sound processing neural network in real-time. The models that are employed have been trained on music datasets in a self-supervised way using contrastive predictive coding.  An optimization procedure generates sounds that activate certain regions in the network.  That way it can be rendered audible how music sounds to this artificial ear.  In addition, the activations of the neurons at each point in time are visualized.  For this, a force graph layout technique is used to create a vivid and dynamic representation of the neural network in action.}
+}
+
+
+@misc{zhang2021ai,
+      title={{The AI Index 2021 Annual Report}}, 
+      author={Daniel Zhang and Saurabh Mishra and Erik Brynjolfsson and John Etchemendy and Deep Ganguli and Barbara Grosz and Terah Lyons and James Manyika and Juan Carlos Niebles and Michael Sellitto and Yoav Shoham and Jack Clark and Raymond Perrault},
+      year={2021},
+      eprint={2103.06312},
+      archivePrefix={arXiv},
+      url={https://arxiv.org/abs/2103.06312},
+      primaryClass={cs.AI}
+}
+
+@INPROCEEDINGS{{8400040,  author={{Došilović, Filip Karlo and Brčić, Mario and Hlupić, Nikica}},  booktitle={{2018 41st International Convention on Information and Communication Technology, Electronics and Microelectronics (MIPRO)}},   title={{Explainable artificial intelligence: A survey}},   year={{2018}},  volume={{}},  number={{}},  
+pages={0210-0215},  
+url="https://doi.org/10.23919/MIPRO.2018.8400040",
+doi={10.23919/MIPRO.2018.8400040}}
+
+@INPROCEEDINGS{9319101,
+  author={Bellgardt, Martin and Scheiderer, Christian and Kuhlen, Torsten W.},
+  booktitle={{2020 IEEE International Conference on Artificial Intelligence and Virtual Reality (AIVR)}}, 
+  title={{An Immersive Node-Link Visualization of Artificial Neural Networks for Machine Learning Experts}}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={33-36},
+  url="https://doi.org/10.1109/AIVR50618.2020.00015",
+  doi={10.1109/AIVR50618.2020.00015}}
+  
+  
+  @INPROCEEDINGS{6871829,
+  author={Chandramouli, Magesh and Zahraee, Mohammad and Winer, Charles},
+  booktitle={{IEEE International Conference on Electro/Information Technology}}, 
+  title={{A fun-learning approach to programming: An adaptive Virtual Reality (VR) platform to teach programming to engineering students}}, 
+  year={2014},
+  volume={},
+  number={},
+  pages={581-586},
+  abstract={This study explains the design and implementation of a Virtual Reality (VR) framework for `fun-based' interactive programming instruction in engineering education courses. Students continue to face several difficulties when learning programming [1] and the lack of efficient tools to overcome such difficulties can affect the students' motivation [2]. Over time, this creates a drastic and negative impact in their attitude towards `learning programming,' which is undesirable for student success in engineering education. To rectify this, a suitable approach that can motivate students needs to be developed to change students' mindset towards learning programming. Student motivation is considered imperative as it is directly influences a student's perseverance and dedication towards accomplishing an objective [3]. Rather than viewing programming courses as a means to complete coursework requirements, students should be made to realize the `power of programming.' Learning and gaining experience in computer programming necessarily involves the development of computational/critical thinking and problem solving skills. All these skills sharpen the minds of the students while simultaneously opening up multiple job prospects for them upon graduation. To this end, to facilitate interactive and fun-filled learning, this research employs a learner-centric, user-friendly Virtual Environment (VE) to teach programming concepts. In doing so, this research aims to make a paradigm shift in the `approach to teaching and learning programming.'},
+  keywords={},
+  url="https://doi.org/10.1109/EIT.2014.6871829",
+  doi={10.1109/EIT.2014.6871829},
+  ISSN={2154-0373},
+  month={June},}
+  
+  @INPROCEEDINGS{9419195,
+  author={Pirker, Johanna and Kopf, Johannes and Kainz, Alexander and Dengel, Andreas and Buchbauer, Benjamin},
+  booktitle={{2021 IEEE Conference on Virtual Reality and 3D User Interfaces Abstracts and Workshops (VRW)}}, 
+  title={{The Potential of Virtual Reality for Computer Science Education -Engaging Students through Immersive Visualizations}}, 
+  year={2021},
+  volume={},
+  number={},
+  pages={297-302},
+  abstract={Popular problems of Computer Science Education that are often solved using algorithms include various number sorting tasks. Sorting algorithms have the potential to emphasize powerful programming paradigms and also to start discussions about algorithm complexity. Research has shown that hands-on activities using analogies and fun activities instead of programming tasks can foster learning in this area in many different ways. In times when much teaching and learning takes place online, the implementing of such unplugged activities can become difficult. Visualizations and animations can help to achieve learning outcomes by making these relatively abstract phenomena more concrete. In particular, virtual reality environments can provide new forms for interacting with visualizations and might well foster motivational, emotional, and perceptual factors that have an influence on learning processes. This paper investigates the differences between these subjective variables in a web application and a VR application for learning sorting algorithms. The results produced initial indicators that learners experience higher presence, absorption, flow, psychological immersion and positive emotions in a virtual reality setting compared to a desktop setting.},
+  keywords={},
+  doi={10.1109/VRW52623.2021.00060},
+  url="https://doi.org/10.1109/VRW52623.2021.00060",
+  ISSN={},
+  month={March},}
+  
+  @INPROCEEDINGS{9320876,
+  author={Paul, Sujni and Hamad, Saif},
+  booktitle={{2020 Seventh International Conference on Information Technology Trends (ITT)}}, 
+  title={{The Role of Virtual Reality in Story telling and Data Visualization for motivating students in learning programming}}, 
+  year={2020},
+  volume={},
+  number={},
+  pages={169-173},
+  abstract={This paper addresses the instructional design of a virtual reality (VR)-oriented educational storytelling and data visualization system. All of us are aware of the importance of storytelling in education. Stories are ubiquitously used as powerful tools in teaching and learning especially during a pandemic situation like this where everything goes online. We are exploring the current practices in both Non - VR based storytelling and VR based storytelling. A prototype is developed to construct data visualization and storytelling. This story telling system aims to deliver programming languages to the targeted learners. Students will be engaged and have the interest in working on programming by themselves as they visualize their output immediately.},
+  keywords={},
+  doi={10.1109/ITT51279.2020.9320876},
+  url="https://doi.org/10.1109/ITT51279.2020.9320876",
+  ISSN={},
+  month={Nov},}
+  
+  
+  @article{10.1145/3236009,
+author = {Guidotti, Riccardo and Monreale, Anna and Ruggieri, Salvatore and Turini, Franco and Giannotti, Fosca and Pedreschi, Dino},
+title = {{A Survey of Methods for Explaining Black Box Models}},
+year = {2018},
+issue_date = {January 2019},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {51},
+number = {5},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3236009},
+doi = {10.1145/3236009},
+abstract = {In recent years, many accurate decision support systems have been constructed as black
+boxes, that is as systems that hide their internal logic to the user. This lack of
+explanation constitutes both a practical and an ethical issue. The literature reports
+many approaches aimed at overcoming this crucial weakness, sometimes at the cost of
+sacrificing accuracy for interpretability. The applications in which black box decision
+systems can be used are various, and each approach is typically developed to provide
+a solution for a specific problem and, as a consequence, it explicitly or implicitly
+delineates its own definition of interpretability and explanation. The aim of this
+article is to provide a classification of the main problems addressed in the literature
+with respect to the notion of explanation and the type of black box system. Given
+a problem definition, a black box type, and a desired explanation, this survey should
+help the researcher to find the proposals more useful for his own work. The proposed
+classification of approaches to open black box models should also be useful for putting
+the many research open questions in perspective.},
+journal = {ACM Comput. Surv.},
+month = aug,
+articleno = {93},
+numpages = {42},
+keywords = {transparent models, Open the black box, explanations, interpretability}
+}
