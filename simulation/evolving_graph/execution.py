@@ -72,7 +72,7 @@ class JoinedExecutor(ActionExecutor):
 
 class WalkExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         current_obj = current_line.object()
@@ -128,7 +128,8 @@ class WalkExecutor(ActionExecutor):
                 if not modify:
                     yield state
                 else:
-                    yield state.change_state(changes, node, current_obj)
+                    yield state.change_state(changes, node, current_obj, in_place=in_place)
+    
 
     def check_walk(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
 
@@ -173,7 +174,7 @@ class WalkExecutor(ActionExecutor):
 
 class _FindExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         current_obj = current_line.object()
@@ -186,8 +187,8 @@ class _FindExecutor(ActionExecutor):
                         [DeleteEdges(CharacterNode(char_index), [Relation.FACING], AnyNode()),
                          AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node), add_reverse=True)],
                         node,
-                        current_obj
-                    )
+                        current_obj,
+                    in_place=in_place)
                 else:
                     yield state
 
@@ -206,7 +207,7 @@ _only_find_executor = _FindExecutor()
 
 class FindExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         current_obj = current_line.object()
@@ -214,24 +215,21 @@ class FindExecutor(ActionExecutor):
             char_node = _get_character_node(state, char_index)
 
             if state.evaluate(ExistsRelation(NodeInstance(node), Relation.ON, NodeInstanceFilter(char_node))):
-                return _only_find_executor.execute(script, state, info, char_index, modify)
+                return _only_find_executor.execute(script, state, info, char_index, modify, in_place)
             elif Property.BODY_PART in node.properties:
-                return _only_find_executor.execute(script, state, info, char_index, modify)
+                return _only_find_executor.execute(script, state, info, char_index, modify, in_place)
             elif _is_character_close_to(state, node, char_index):
-                return _only_find_executor.execute(script, state, info, char_index, modify)
+                return _only_find_executor.execute(script, state, info, char_index, modify, in_place)
             elif State.SITTING in char_node.states or State.LYING in char_node.states:
-                return _only_find_executor.execute(script, state, info, char_index, modify)
+                return _only_find_executor.execute(script, state, info, char_index, modify, in_place)
             else:
-                # print(script, state, info, char_index, modify)
-
-                # TODO got rid of modify
-                return _walk_find_executor.execute(script, state, info, char_index)
+                return _walk_find_executor.execute(script, state, info, char_index, modify, in_place)
         info.error('Could not find object {}'.format(current_obj.name))
 
 
 class GreetExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -240,7 +238,7 @@ class GreetExecutor(ActionExecutor):
         else:
             if self.check_if_person(state, node, info):
                 if modify:
-                    yield state.change_state([])
+                    yield state.change_state([], in_place=in_place)
                 else:
                     yield state
 
@@ -263,7 +261,7 @@ class SitExecutor(ActionExecutor):
         'bench': 2
     }
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -278,7 +276,8 @@ class SitExecutor(ActionExecutor):
                 yield state.change_state(
                     [AddEdges(CharacterNode(char_index), Relation.ON, NodeInstance(node)),
                      AddEdges(CharacterNode(char_index), Relation.FACING, RelationFrom(node, Relation.FACING)),
-                     ChangeNode(new_char_node)]
+                     ChangeNode(new_char_node)],
+                    in_place=in_place
                 )
             else:
                 yield state
@@ -306,7 +305,7 @@ class SitExecutor(ActionExecutor):
 
 class StandUpExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         info.set_current_line(script[0])
         char_node = _get_character_node(state, char_index)
         if State.SITTING in char_node.states or State.LYING in char_node.states:
@@ -314,7 +313,7 @@ class StandUpExecutor(ActionExecutor):
             new_char_node.states.discard(State.SITTING)
             new_char_node.states.discard(State.LYING)
             if modify:
-                yield state.change_state([ChangeNode(new_char_node)])
+                yield state.change_state([ChangeNode(new_char_node)], in_place=in_place)
             else:
                 yield state
         else:
@@ -323,7 +322,7 @@ class StandUpExecutor(ActionExecutor):
 
 class GrabExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -334,10 +333,9 @@ class GrabExecutor(ActionExecutor):
             if new_relation is not None:
                 char_node = _get_character_node(state, char_index)
                 char_room = _get_room_node(state, char_node)
-                changes = [DeleteEdges(NodeInstance(node), [Relation.ON, Relation.INSIDE, Relation.CLOSE], AnyNode(),
-                                       delete_reverse=True),
-                           AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node), add_reverse=True),
-                           AddEdges(CharacterNode(char_index), new_relation, NodeInstance(node)),
+                changes = [DeleteEdges(NodeInstance(node), [Relation.ON, Relation.INSIDE, Relation.CLOSE, Relation.HOLDS_LH, Relation.HOLDS_RH], AnyNode(), delete_reverse=True),
+                           AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(node), add_reverse=True), 
+                           AddEdges(CharacterNode(char_index), new_relation, NodeInstance(node)), 
                            AddEdges(NodeInstance(node), Relation.INSIDE, NodeInstance(char_room))]
                 new_close, relation = _find_first_node_from(state, node, [Relation.ON, Relation.INSIDE, Relation.CLOSE])
                 if new_close is not None:
@@ -345,7 +343,7 @@ class GrabExecutor(ActionExecutor):
                         AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(new_close), add_reverse=True),
                         AddExecDataValue((Action.GRAB, node.id), (new_close, relation))]
                 if modify:
-                    yield state.change_state(changes)
+                    yield state.change_state(changes, in_place=in_place)
                 else:
                     yield state
 
@@ -383,7 +381,8 @@ class OpenExecutor(ActionExecutor):
         """
         self.close = close
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
+
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -394,7 +393,7 @@ class OpenExecutor(ActionExecutor):
             new_node.states.discard(State.OPEN if self.close else State.CLOSED)
             new_node.states.add(State.CLOSED if self.close else State.OPEN)
             if modify:
-                yield state.change_state([ChangeNode(new_node)])
+                yield state.change_state([ChangeNode(new_node)], in_place=in_place)
             else:
                 yield state
 
@@ -434,7 +433,7 @@ class PutExecutor(ActionExecutor):
         """
         self.relation = relation
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         src_node = state.get_state_node(current_line.object())
@@ -449,7 +448,7 @@ class PutExecutor(ActionExecutor):
                      AddEdges(CharacterNode(char_index), Relation.CLOSE, NodeInstance(dest_node), add_reverse=True),
                      AddEdges(NodeInstance(src_node), Relation.CLOSE, NodeInstance(dest_node), add_reverse=True),
                      AddEdges(NodeInstance(src_node), self.relation, NodeInstance(dest_node)),
-                     ClearExecDataKey((Action.GRAB, src_node.id))]
+                     ClearExecDataKey((Action.GRAB, src_node.id))], in_place=in_place
                 )
             else:
                 yield state
@@ -457,7 +456,7 @@ class PutExecutor(ActionExecutor):
 
 class PutBackExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         src_node = state.get_state_node(current_line.object())
@@ -479,7 +478,7 @@ class PutBackExecutor(ActionExecutor):
                              AddEdges(NodeInstance(src_node), Relation.CLOSE, NodeInstance(dest_node),
                                       add_reverse=True),
                              AddEdges(NodeInstance(src_node), relation, NodeInstance(dest_node)),
-                             ClearExecDataKey((Action.GRAB, src_node.id))]
+                             ClearExecDataKey((Action.GRAB, src_node.id))], in_place=in_place
                         )
                 else:
                     yield state
@@ -514,7 +513,7 @@ class SwitchExecutor(ActionExecutor):
         """
         self.switch_on = switch_on
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -525,7 +524,7 @@ class SwitchExecutor(ActionExecutor):
             new_node.states.discard(State.OFF if self.switch_on else State.ON)
             new_node.states.add(State.ON if self.switch_on else State.OFF)
             if modify:
-                yield state.change_state([ChangeNode(new_node)])
+                yield state.change_state([ChangeNode(new_node)], in_place=in_place)
             else:
                 yield state
 
@@ -552,7 +551,7 @@ class SwitchExecutor(ActionExecutor):
 
 class DrinkExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -560,8 +559,8 @@ class DrinkExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_drinkable(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
-            else:
+                yield state.change_state([], in_place=in_place)
+            else: 
                 yield state
 
     def check_drinkable(self, state: EnvironmentState, node: GraphNode, info: ExecutionInfo, char_index):
@@ -577,7 +576,7 @@ class DrinkExecutor(ActionExecutor):
 
 class TurnToExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -586,8 +585,8 @@ class TurnToExecutor(ActionExecutor):
         elif self.check_turn_to(state, node, info):
             if modify:
                 yield state.change_state(
-                    [DeleteEdges(CharacterNode(char_index), [Relation.FACING], AnyNode()),
-                     AddEdges(CharacterNode(char_index), Relation.FACING, NodeInstance(node))]
+                    [DeleteEdges(CharacterNode(char_index), [Relation.FACING], AnyNode()), 
+                     AddEdges(CharacterNode(char_index), Relation.FACING, NodeInstance(node))], in_place=in_place
                 )
             else:
                 yield state
@@ -598,7 +597,7 @@ class TurnToExecutor(ActionExecutor):
 
 class LookAtExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -606,7 +605,7 @@ class LookAtExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_lookat(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -621,7 +620,7 @@ class LookAtExecutor(ActionExecutor):
 
 class WipeExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -632,7 +631,7 @@ class WipeExecutor(ActionExecutor):
             new_node.states.discard(State.DIRTY)
             new_node.states.add(State.CLEAN)
             if modify:
-                yield state.change_state([ChangeNode(new_node)])
+                yield state.change_state([ChangeNode(new_node)], in_place=in_place)
             else:
                 yield state
 
@@ -657,7 +656,7 @@ class WipeExecutor(ActionExecutor):
 
 class PutOnExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -668,7 +667,7 @@ class PutOnExecutor(ActionExecutor):
                 yield state.change_state([
                     AddEdges(NodeInstance(node), Relation.ON, CharacterNode(char_index)),
                     DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH], NodeInstance(node)),
-                ])
+                ], in_place=in_place)
             else:
                 yield state
 
@@ -688,7 +687,7 @@ class PutOnExecutor(ActionExecutor):
 
 class PutOffExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -698,7 +697,7 @@ class PutOffExecutor(ActionExecutor):
             if modify:
                 yield state.change_state([
                     DeleteEdges(NodeInstance(node), [Relation.ON], CharacterNode(char_index))
-                ])
+                ], in_place=in_place)
             else:
                 yield state
 
@@ -715,7 +714,7 @@ class PutOffExecutor(ActionExecutor):
 
 class DropExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -728,7 +727,7 @@ class DropExecutor(ActionExecutor):
                 yield state.change_state(
                     [DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH], NodeInstance(node)),
                      AddEdges(NodeInstance(node), Relation.INSIDE, NodeInstance(char_room)),
-                     ClearExecDataKey((Action.GRAB, node.id))]
+                     ClearExecDataKey((Action.GRAB, node.id))], in_place=in_place
                 )
             else:
                 yield state
@@ -745,7 +744,7 @@ class DropExecutor(ActionExecutor):
 
 class ReadExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -753,7 +752,7 @@ class ReadExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_readable(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -770,7 +769,7 @@ class ReadExecutor(ActionExecutor):
 
 class TouchExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -778,7 +777,7 @@ class TouchExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_reachable(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -802,7 +801,7 @@ class LieExecutor(ActionExecutor):
         'bench': 1
     }
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -816,7 +815,7 @@ class LieExecutor(ActionExecutor):
             if modify:
                 yield state.change_state(
                     [AddEdges(CharacterNode(char_index), Relation.ON, NodeInstance(node)),
-                     ChangeNode(new_char_node)]
+                     ChangeNode(new_char_node)], in_place=in_place
                 )
             else:
                 yield state
@@ -842,7 +841,7 @@ class LieExecutor(ActionExecutor):
 
 class PourExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         src_node = state.get_state_node(current_line.object())
@@ -856,7 +855,7 @@ class PourExecutor(ActionExecutor):
                 changes += [DeleteEdges(CharacterNode(char_index), [Relation.HOLDS_LH, Relation.HOLDS_RH],
                                         NodeInstance(src_node))]
             if modify:
-                yield state.change_state(changes)
+                yield state.change_state(changes, in_place=in_place)
             else:
                 yield state
 
@@ -887,7 +886,7 @@ class PourExecutor(ActionExecutor):
 
 class TypeExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -895,7 +894,7 @@ class TypeExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_typeable(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -918,7 +917,7 @@ class TypeExecutor(ActionExecutor):
 
 class WatchExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -926,7 +925,7 @@ class WatchExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_watchable(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -956,7 +955,7 @@ class WatchExecutor(ActionExecutor):
 
 class MoveExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         action_name = current_line.action.name.lower()
         info.set_current_line(current_line)
@@ -967,7 +966,7 @@ class MoveExecutor(ActionExecutor):
             new_relation = self.check_movable(state, node, info, action_name, char_index)
             if new_relation is not None:
                 if modify:
-                    yield state.change_state([])
+                    yield state.change_state([], in_place=in_place)
                 else:
                     yield state
 
@@ -995,7 +994,7 @@ class MoveExecutor(ActionExecutor):
 
 class WashExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -1006,7 +1005,7 @@ class WashExecutor(ActionExecutor):
             new_node.states.discard(State.DIRTY)
             new_node.states.add(State.CLEAN)
             if modify:
-                yield state.change_state([ChangeNode(new_node)])
+                yield state.change_state([ChangeNode(new_node)], in_place=in_place)
             else:
                 yield state
 
@@ -1021,7 +1020,7 @@ class WashExecutor(ActionExecutor):
 
 class SqueezeExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -1029,7 +1028,7 @@ class SqueezeExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_squeezable(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -1061,7 +1060,7 @@ class PlugExecutor(ActionExecutor):
         """
         self.plug_in = plug_in
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -1072,7 +1071,7 @@ class PlugExecutor(ActionExecutor):
             new_node.states.discard(State.PLUGGED_OUT if self.plug_in else State.PLUGGED_IN)
             new_node.states.add(State.PLUGGED_IN if self.plug_in else State.PLUGGED_OUT)
             if modify:
-                yield state.change_state([ChangeNode(new_node)])
+                yield state.change_state([ChangeNode(new_node)], in_place=in_place)
             else:
                 yield state
 
@@ -1097,7 +1096,7 @@ class PlugExecutor(ActionExecutor):
 
 class CutExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -1105,7 +1104,7 @@ class CutExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_cuttable(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -1135,7 +1134,7 @@ class CutExecutor(ActionExecutor):
 
 class EatExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         current_line = script[0]
         info.set_current_line(current_line)
         node = state.get_state_node(current_line.object())
@@ -1143,7 +1142,7 @@ class EatExecutor(ActionExecutor):
             info.object_found_error()
         elif self.check_eatable(state, node, info, char_index):
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -1169,7 +1168,7 @@ class EatExecutor(ActionExecutor):
 
 class SleepExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
 
         info.set_current_line(script[0])
         char_node = _get_character_node(state, char_index)
@@ -1177,14 +1176,14 @@ class SleepExecutor(ActionExecutor):
             info.error('{} is not lying or sitting', char_node)
         else:
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
 
 class WakeUpExecutor(ActionExecutor):
 
-    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def execute(self, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
 
         info.set_current_line(script[0])
         char_node = _get_character_node(state, char_index)
@@ -1192,7 +1191,7 @@ class WakeUpExecutor(ActionExecutor):
             info.error('{} is not lying or sitting', char_node)
         else:
             if modify:
-                yield state.change_state([])
+                yield state.change_state([], in_place=in_place)
             else:
                 yield state
 
@@ -1468,9 +1467,9 @@ class ScriptExecutor(object):
         return True, state, graph_state_list
 
     @classmethod
-    def call_action_method(cls, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True):
+    def call_action_method(cls, script: Script, state: EnvironmentState, info: ExecutionInfo, char_index, modify=True, in_place=False):
         executor = cls._action_executors.get(script[0].action, UnknownExecutor())
-        return executor.execute(script, state, info, char_index, modify)
+        return executor.execute(script, state, info, char_index, modify, in_place)
 
     def check_one_step(self, script: Script, state: EnvironmentState):
         prev_state = state
@@ -1480,10 +1479,10 @@ class ScriptExecutor(object):
 
         return True
 
-    def execute_one_step(self, script: Script, state: EnvironmentState):
+    def execute_one_step(self, script: Script, state: EnvironmentState, in_place=False):
         prev_state = state
-        # print("in execute_one_step, char_index = {}".format(self.char_index))
-        state = next(self.call_action_method(script, state, self.info, self.char_index), None)
+        #print("in execute_one_step, char_index = {}".format(self.char_index))
+        state = next(self.call_action_method(script, state, self.info, self.char_index, in_place=in_place), None)
         if state is None:
             return False, prev_state
 

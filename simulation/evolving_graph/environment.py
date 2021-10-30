@@ -400,7 +400,7 @@ class EnvironmentState(object):
         node.id = self._max_node_id
         self._new_nodes[node.id] = node
 
-    def change_state(self, changers: List['StateChanger'], node: Node = None, obj: ScriptObject = None, in_place=False):
+    def change_state(self, changers: List['StateChanger'], node: Node = None, obj: ScriptObject = None, in_place = False):
 
         new_state = EnvironmentState(self._graph, self._name_equivalence, self.instance_selection)
         if in_place:
