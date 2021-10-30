@@ -1452,6 +1452,7 @@ class ScriptExecutor(object):
         _apply_initial_changers(state, script, init_changers)
         graph_state_list = []
         for i in range(len(script)):
+            # zhuoyue: if we really want ot call render_script between states, we can probably call it here.
             prev_state = state
             if w_graph_list:
                 graph_state_list.append(state.to_dict())

@@ -231,6 +231,17 @@ class UnityCommunication(object):
              })
         return response['success'], response['message']
 
+    def get_room_number(self):  # zhuoyue
+        """
+        get the room number that the character is in
+        :return: succes (bool)
+        """
+        response = self.post_command(
+            {'id': str(time.time()),
+             'action': 'get_room_number'
+             })
+        return response['success'], response['message']
+
     def check(self, script_lines):
         response = self.post_command({'id': str(time.time()), 'action': 'check_script', 'stringParams': script_lines})
         return response['success'], response['message']
@@ -431,6 +442,7 @@ class UnityCommunication(object):
 
         :return: pair success (bool), message: (str)
         """
+        # zhuoyue: I guess we should lower the save_every_n_frames
         params = {'randomize_execution': randomize_execution, 'random_seed': random_seed,
                   'processing_time_limit': processing_time_limit, 'skip_execution': skip_execution,
                   'output_folder': output_folder, 'file_name_prefix': file_name_prefix,

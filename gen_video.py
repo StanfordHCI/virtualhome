@@ -143,6 +143,8 @@ def main():
 
     before = time.time()
     try:
+        # zhuoyue: ok, I think I get it, it takes the `video_script` as actions,
+        # graph_state_list[0] as the initial states of everything, and everything from now on happens in Unity
         res = render_script(comm, video_script, graph_state_list[0], ENV, output, find_solution=True)
         print(res)
     except Exception as e:

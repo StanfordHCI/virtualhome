@@ -124,7 +124,10 @@ class DataGenerator():
                         self.deal_with_room(obj_match, line)
                     # Script is not executable, since <sink> (156)
                     # can not be opened when executing "[OPEN] <sink> (156) [97]"
-                    if obj_match == 'sink':
+                    if obj_match == 'sink' or obj_match == 'fridge':
+                        # zhuoyue: if it's 'fridge'
+                        # (1) the humanoid is gonna be stuck in the fridge
+                        # (2) all bookshelves and TV Stands will have offset to the wall
                         continue
                     # <dishwasher> (166) is still on when executing "[OPEN] <dishwasher> (166) [330]"
                     # if obj_match == 'dishwasher' and \

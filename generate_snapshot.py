@@ -80,6 +80,7 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
     # only show the first camera (id: 0) and the one mounted on the person ( id:28 the 29th camera)
     # cameras_select = ['0', '1', '2', '3', '28']
     # cameras_select = ['0']
+    # cameras_select = ['0', '4', '8', '12', '16']
     print(cameras_select)
 
     frame_num = 0
@@ -96,12 +97,19 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
         # f = open("{}/{}.json".format(output, i),)
         # graph_state = json.load(f)
         message = comm.expand_scene(graph_state, randomize=False)
+        _, motion_sensors_distances = comm.get_motion_sensor_states()
+        _, room_num = comm.get_room_number()
+        _, rgb_imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480, image_width=640)
+        _, point_cloud_imgs = comm.camera_image(cameras_select, mode='point_cloud', image_height=480, image_width=640)
+        # _, seg_class_imgs = comm.camera_image(cameras_select, mode='seg_class', image_height=480, image_width=640)
+        # _, seg_inst_imgs = comm.camera_image(cameras_select, mode='seg_inst', image_height=480, image_width=640)
         print(message)
 
         ## Save iot raw data directly in JSON
         # with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
         #     json.dump(graph_state["nodes"], file_obj)
 
+        ## Save IoT states in JSON
         new_data = []
         # cleaning the data such that we only leave the ids and states (for binary IoT), sorted by id
         for data_entry in graph_state["nodes"]:
@@ -119,7 +127,7 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
                 new_data.append(local_new)
         sorted_new_data = sorted(new_data, key=lambda i: i["id"])
 
-        _, motion_sensors_distances = comm.get_motion_sensor_states()
+        ## Get Motion sensor data
         num_sensors_per_room = 8  # zhuoyue: changeable, currently we have 8 corners per room so
         threshold = 7  # zhuoyue, because, typically the min distance is 1,0-3.0, max is about 17 or 18.
         # And when the character stand in the center of the room, the distances to 8 corners are around 6.3 to 6.9
@@ -133,15 +141,17 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
                          "class_name": 'motion_sensor_of_room_{}'.format(i // num_sensors_per_room)}
             sorted_new_data.append(local_new)
 
+        ## Put the room number into the json data
+        print(room_num)
+        latest_id = sorted_new_data[-1]["id"]
+        local_new = {"id": latest_id + 1,
+                     "state": room_num,
+                     "class_name": 'room_number'}
+        sorted_new_data.append(local_new)
+
+        ## Write data into JSON
         with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
             json.dump(sorted_new_data, file_obj)
-
-        _, rgb_imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480, image_width=640)
-        _, point_cloud_imgs = comm.camera_image(cameras_select, mode='point_cloud', image_height=480, image_width=640)
-
-        # Currently Zhengze don't need seg data
-        # _, seg_class_imgs = comm.camera_image(cameras_select, mode='seg_class', image_height=480, image_width=640)
-        # _, seg_inst_imgs = comm.camera_image(cameras_select, mode='seg_inst', image_height=480, image_width=640)
 
         for i in range(len(cameras_select)):
             with open("{}/{}-{}-rgb.png".format(output, frame_num, i), 'wb') as ofs:
@@ -155,7 +165,7 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
             # with open("{}/{}-{}-seg_class.png".format(output, frame_num, i), 'wb') as ofs:
             #     data = base64.b64decode(seg_class_imgs[i])
             #     ofs.write(data)
-            #
+
             # with open("{}/{}-{}-seg_inst.png".format(output, frame_num, i), 'wb') as ofs:
             #     data = base64.b64decode(seg_inst_imgs[i])
             #     ofs.write(data)
