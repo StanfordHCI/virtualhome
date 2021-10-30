@@ -1,8 +1,0 @@
-[Walk] <bedroom> (1)
-[Find] <bed> (1)
-[Find] <lightswitch> (3)
-[SwitchOn] <lightswitch> (3)
-[Walk] <bedroom> (1)
-[Find] <lightswitch> (3)
-[SwitchOff] <lightswitch> (3)
-[Find] <bed> (1)

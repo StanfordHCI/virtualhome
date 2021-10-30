@@ -1,4 +1,0 @@
-Test Jackie's script
-
-[Walk] <lightswitch> (1)
-[SwitchOn] <lightswitch> (1)

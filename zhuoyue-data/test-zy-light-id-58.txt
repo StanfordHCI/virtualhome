@@ -1,6 +1,0 @@
-Zhuoyue test
-
-
-[Walk] <lightswitch> (1)
-[Find] <lightswitch> (1)
-[SwitchOn] <lightswitch> (1)

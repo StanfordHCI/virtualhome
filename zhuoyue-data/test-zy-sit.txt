@@ -1,6 +1,0 @@
-[Walk] <kitchen> (1)
-[Walk] <chair> (1)
-[Sit] <chair> (1)
-[Standup]
-[Walk] <fridge> (1)
-[Open] <fridge> (1)

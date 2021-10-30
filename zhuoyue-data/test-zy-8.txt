@@ -1,9 +1,0 @@
-Zhuoyue test
-
-
-[Walk] <fridge> (1)
-[Open] <fridge> (1)
-[Walk] <sofa> (1)
-[Walk] <bed> (1)
-[Walk] <fridge> (1)
-[Close] <fridge> (1)
