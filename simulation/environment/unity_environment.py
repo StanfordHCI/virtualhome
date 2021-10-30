@@ -1,23 +1,14 @@
 from .base_environment import BaseEnvironment
-import sys
-import os
-
-curr_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(f'{curr_dir}/../')
-
-from unity_simulator import comm_unity as comm_unity
+from simulation.unity_simulator import comm_unity as comm_unity
 from . import utils as utils_environment
-from evolving_graph import utils
+from simulation.evolving_graph import utils
 import atexit
-import random
 import pdb
-import ipdb
 import random
-import json
 import numpy as np
 
-class UnityEnvironment(BaseEnvironment):
 
+class UnityEnvironment(BaseEnvironment):
 
     def __init__(self,
                  num_agents=2,
@@ -27,24 +18,21 @@ class UnityEnvironment(BaseEnvironment):
                  base_port=8080,
                  port_id=0,
                  executable_args={},
-                 recording_options={'recording': False, 
-                                    'output_folder': None, 
+                 recording_options={'recording': False,
+                                    'output_folder': None,
                                     'file_name_prefix': None,
                                     'cameras': 'PERSON_FROM_BACK',
                                     'modality': 'normal'},
                  seed=123):
-
 
         self.seed = seed
         self.prev_reward = 0.
         self.rnd = random.Random(seed)
         np.random.seed(seed)
 
-
         self.steps = 0
         self.env_id = None
         self.max_ids = {}
-
 
         self.num_agents = num_agents
         self.max_episode_length = max_episode_length
@@ -76,18 +64,15 @@ class UnityEnvironment(BaseEnvironment):
         else:
             self.observation_types = ['partial' for _ in range(num_agents)]
 
-        
         self.agent_info = {
             0: 'Chars/Female1',
             1: 'Chars/Male1'
         }
-        
 
         self.changed_graph = True
         self.rooms = None
         self.id2node = None
         self.num_static_cameras = None
-
 
         if use_editor:
             # Use Unity Editor
@@ -101,9 +86,6 @@ class UnityEnvironment(BaseEnvironment):
 
         atexit.register(self.close)
         self.reset()
-
-
-
 
     def close(self):
         self.comm.close()
@@ -143,9 +125,8 @@ class UnityEnvironment(BaseEnvironment):
 
         graph = self.get_graph()
         self.steps += 1
-        
+
         obs = self.get_observations()
-        
 
         info['finished'] = done
         info['graph'] = graph
@@ -167,13 +148,13 @@ class UnityEnvironment(BaseEnvironment):
         else:
             self.comm.reset()
 
-        s,g = self.comm.environment_graph()
+        s, g = self.comm.environment_graph()
         if self.env_id not in self.max_ids.keys():
             max_id = max([node['id'] for node in g['nodes']])
             self.max_ids[self.env_id] = max_id
 
         max_id = self.max_ids[self.env_id]
-        #print(max_id)
+        # print(max_id)
         if environment_graph is not None:
             # TODO: this should be modified to extend well
             # updated_graph = utils.separate_new_ids_graph(environment_graph, max_id)
@@ -200,7 +181,6 @@ class UnityEnvironment(BaseEnvironment):
                 self.comm.add_character()
 
         _, self.init_unity_graph = self.comm.environment_graph()
-
 
         self.changed_graph = True
         graph = self.get_graph()
@@ -244,7 +224,7 @@ class UnityEnvironment(BaseEnvironment):
         if obs_type == 'partial':
             # agent 0 has id (0 + 1)
             curr_graph = self.get_graph()
-            return utils.get_visible_nodes(curr_graph, agent_id=(agent_id+1))
+            return utils.get_visible_nodes(curr_graph, agent_id=(agent_id + 1))
 
         elif obs_type == 'full':
             return self.get_graph()
@@ -264,12 +244,10 @@ class UnityEnvironment(BaseEnvironment):
                 current_mode = info['mode']
             else:
                 current_mode = 'normal'
-            s, images = self.comm.camera_image(camera_ids, mode=current_mode, image_width=image_width, image_height=image_height)
+            s, images = self.comm.camera_image(camera_ids, mode=current_mode, image_width=image_width,
+                                               image_height=image_height)
             if not s:
                 pdb.set_trace()
             return images[0]
         else:
             raise NotImplementedError
-
-
-        
