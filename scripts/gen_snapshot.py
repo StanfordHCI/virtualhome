@@ -79,13 +79,46 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
     # cameras_select.extend([str(i + len(scene_camera_ids)) for i in range(num_char_cameras)])
     # only show the first camera (id: 0) and the one mounted on the person ( id:28 the 29th camera)
     # cameras_select = ['0', '1', '2', '3', '28']
-    cameras_select = ['0']
+    # cameras_select = ['0']
     # cameras_select = ['0', '4', '8', '12', '16']
     print(cameras_select)
 
     frame_num = 0
     # for i in range(2):
     for graph_state in tqdm(graph_state_list):  # tqdm is progress bar
+
+        # since for some reason we just can index the blue bedroom, and the light 402 is mark as missing as 1000
+        # so here we just manually replace it
+        # for i in range(len(graph_state["nodes"])):
+        #     if graph_state["nodes"][i]["id"] == 402:
+        #         del graph_state["nodes"][i]
+        #         i -= 1
+        #     elif graph_state["nodes"][i]["id"] == 1000:
+        #         graph_state["nodes"][i]["id"] = 402
+        #
+        # for j in range(len(graph_state["edges"])):
+        #     if graph_state["edges"][j]["from_id"] == 1000:
+        #         del graph_state["edges"][j]
+        #         j -= 1
+        #     elif graph_state["edges"][j]["to_id"] == 1000:
+        #         del graph_state["edges"][j]
+        #         j -= 1
+
+        count_i = 0
+        count_j = 0
+        for data_entry in graph_state["nodes"]:
+            if data_entry["id"] == 402:
+                del graph_state["nodes"][count_i]
+            if data_entry["id"] == 1000:
+                graph_state["nodes"][count_i]["id"] = 402
+            count_i += 1
+
+        for data_entry in graph_state["edges"]:
+            if data_entry["from_id"] == 1000 or data_entry["to_id"] == 1000:
+                del graph_state["edges"][count_j]
+            count_j += 1
+
+        print()
         # the following doesn't help with the weird location issue
         # graph_state['nodes'] = sorted(graph_state['nodes'], key=lambda i: i["id"])
         # if graph_state['nodes'][0]['id'] == 163:
@@ -191,6 +224,8 @@ graph_input = check_programs.translate_graph_dict_nofile(graph_input)
 message, final_state, graph_state_list, graph_dict, id_mapping, info, helper, modif_script = check_programs.check_script(
     script, preconds, graph_path=None, inp_graph_dict=graph_input)
 
+bedroom_id = [node['id'] for node in graph_input['nodes'] if node['class_name'] == 'bedroom']
+print(bedroom_id)
 # zhuoyue: graph_state_list is basically a list of nodes, each node is a list of states, which has been looped
 # in the `for graph_state in tqdm(graph_state_list)`
 
