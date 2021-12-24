@@ -79,7 +79,7 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
     # cameras_select.extend([str(i + len(scene_camera_ids)) for i in range(num_char_cameras)])
     # only show the first camera (id: 0) and the one mounted on the person ( id:28 the 29th camera)
     # cameras_select = ['0', '1', '2', '3', '28']
-    # cameras_select = ['0']
+    cameras_select = ['0']
     # cameras_select = ['0', '4', '8', '12', '16']
     print(cameras_select)
 

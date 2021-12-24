@@ -1,19 +1,13 @@
 import base64
 import collections
 import time
-import io
 import json
 import requests
-from PIL import Image
 import cv2
 import numpy as np
-import glob
-import atexit
-from sys import platform
 import sys
-import pdb
-from . import communication
 
+from simulation.unity_simulator import communication
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
 
