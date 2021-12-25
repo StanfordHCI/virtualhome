@@ -89,20 +89,6 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
 
         # since for some reason we just can index the blue bedroom, and the light 402 is mark as missing as 1000
         # so here we just manually replace it
-        # for i in range(len(graph_state["nodes"])):
-        #     if graph_state["nodes"][i]["id"] == 402:
-        #         del graph_state["nodes"][i]
-        #         i -= 1
-        #     elif graph_state["nodes"][i]["id"] == 1000:
-        #         graph_state["nodes"][i]["id"] = 402
-        #
-        # for j in range(len(graph_state["edges"])):
-        #     if graph_state["edges"][j]["from_id"] == 1000:
-        #         del graph_state["edges"][j]
-        #         j -= 1
-        #     elif graph_state["edges"][j]["to_id"] == 1000:
-        #         del graph_state["edges"][j]
-        #         j -= 1
 
         count_i = 0
         count_j = 0
@@ -118,20 +104,20 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
                 del graph_state["edges"][count_j]
             count_j += 1
 
-        print()
+        # print()
         # the following doesn't help with the weird location issue
         # graph_state['nodes'] = sorted(graph_state['nodes'], key=lambda i: i["id"])
         # if graph_state['nodes'][0]['id'] == 163:
         #     graph_state['nodes'][0]['states'] = ["CLEAN", "PLUGGED_IN", "CLOSED"]
 
-        # with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
-        #     json.dump(graph_state, file_obj)
+        with open("{}/original-{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
+            json.dump(graph_state, file_obj)
 
         # f = open("{}/{}.json".format(output, i),)
         # graph_state = json.load(f)
         message = comm.expand_scene(graph_state, randomize=False)
-        _, motion_sensors_distances = comm.get_motion_sensor_states()
-        _, room_num = comm.get_room_number()
+        # _, motion_sensors_distances = comm.get_motion_sensor_states()
+        # _, room_num = comm.get_room_number()
         _, rgb_imgs = comm.camera_image(cameras_select, mode='rgb', image_height=480, image_width=640)
         _, point_cloud_imgs = comm.camera_image(cameras_select, mode='point_cloud', image_height=480, image_width=640)
         # _, seg_class_imgs = comm.camera_image(cameras_select, mode='seg_class', image_height=480, image_width=640)
@@ -160,27 +146,27 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
                 new_data.append(local_new)
         sorted_new_data = sorted(new_data, key=lambda i: i["id"])
 
-        ## Get Motion sensor data
-        num_sensors_per_room = 8  # zhuoyue: changeable, currently we have 8 corners per room so
-        threshold = 7  # zhuoyue, because, typically the min distance is 1,0-3.0, max is about 17 or 18.
-        # And when the character stand in the center of the room, the distances to 8 corners are around 6.3 to 6.9
-        latest_id = sorted_new_data[-1]["id"]
-
-        # loop through the motion_sensor_distance
-        dis_list = json.loads(motion_sensors_distances)
-        for i in range(len(dis_list)):
-            local_new = {"id": latest_id + 1 + i,
-                         "state": int(dis_list[i] <= threshold),
-                         "class_name": 'motion_sensor_of_room_{}'.format(i // num_sensors_per_room)}
-            sorted_new_data.append(local_new)
-
-        ## Put the room number into the json data
-        print(room_num)
-        latest_id = sorted_new_data[-1]["id"]
-        local_new = {"id": latest_id + 1,
-                     "state": room_num,
-                     "class_name": 'room_number'}
-        sorted_new_data.append(local_new)
+        # ## Get Motion sensor data
+        # num_sensors_per_room = 8  # zhuoyue: changeable, currently we have 8 corners per room so
+        # threshold = 7  # zhuoyue, because, typically the min distance is 1,0-3.0, max is about 17 or 18.
+        # # And when the character stand in the center of the room, the distances to 8 corners are around 6.3 to 6.9
+        # latest_id = sorted_new_data[-1]["id"]
+        #
+        # # loop through the motion_sensor_distance
+        # dis_list = json.loads(motion_sensors_distances)
+        # for i in range(len(dis_list)):
+        #     local_new = {"id": latest_id + 1 + i,
+        #                  "state": int(dis_list[i] <= threshold),
+        #                  "class_name": 'motion_sensor_of_room_{}'.format(i // num_sensors_per_room)}
+        #     sorted_new_data.append(local_new)
+        #
+        # ## Put the room number into the json data
+        # print(room_num)
+        # latest_id = sorted_new_data[-1]["id"]
+        # local_new = {"id": latest_id + 1,
+        #              "state": room_num,
+        #              "class_name": 'room_number'}
+        # sorted_new_data.append(local_new)
 
         ## Write data into JSON
         with open("{}/{}.json".format(output, frame_num), 'w') as file_obj:  # open the file in write mode
