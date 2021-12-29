@@ -184,3 +184,8 @@ test*.py
 data/*
 Output*
 zhuoyue-data*
+graph_states*
+graph_states/
+old-output*
+/data/
+/graph_states/
