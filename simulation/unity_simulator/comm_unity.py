@@ -226,6 +226,34 @@ class UnityCommunication(object):
              })
         return response['success'], response['message']
 
+    def update_day_and_night(self, state):  # zhuoyue
+        """
+        get the distances between characters to corners
+        :return: succes (bool)
+        """
+        response = self.post_command(
+            {'id': str(time.time()),
+             'action': 'update_day_and_night',
+             'stringParams': [json.dumps({
+                 'char_index': state,
+             })]
+             })
+        return response['success'], response['message']
+
+    def update_curtain(self, state):  # zhuoyue
+        """
+        get the distances between characters to corners
+        :return: succes (bool)
+        """
+        response = self.post_command(
+            {'id': str(time.time()),
+             'action': 'update_curtain',
+             'stringParams': [json.dumps({
+                 'char_index': state,
+             })]
+             })
+        return response['success'], response['message']
+
     def get_room_number(self):  # zhuoyue
         """
         get the room number that the character is in

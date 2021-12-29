@@ -72,7 +72,8 @@ def build_grid_images(images):
 def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_char_cameras=2):
     s, scene_camera_ids = comm.home_capture_camera_ids()
     # cameras_select = [str(i) for i in scene_camera_ids][:num_scene_cameras]
-    cameras_select = [str(i) for i in scene_camera_ids]
+    # cameras_select = [str(i) for i in scene_camera_ids]
+    cameras_select = [str(i) for i in range(16, 20)]
     # s, char_camera_ids = comm.character_cameras()
 
     # because the ids of char cameras starts from 20 (there are 20 scene cameras, 8 character cameras)
@@ -89,20 +90,20 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
 
         # since for some reason we just can index the blue bedroom, and the light 402 is mark as missing as 1000
         # so here we just manually replace it
-
-        count_i = 0
-        count_j = 0
-        for data_entry in graph_state["nodes"]:
-            if data_entry["id"] == 402:
-                del graph_state["nodes"][count_i]
-            if data_entry["id"] == 1000:
-                graph_state["nodes"][count_i]["id"] = 402
-            count_i += 1
-
-        for data_entry in graph_state["edges"]:
-            if data_entry["from_id"] == 1000 or data_entry["to_id"] == 1000:
-                del graph_state["edges"][count_j]
-            count_j += 1
+        #
+        # count_i = 0
+        # count_j = 0
+        # for data_entry in graph_state["nodes"]:
+        #     if data_entry["id"] == 402:
+        #         del graph_state["nodes"][count_i]
+        #     if data_entry["id"] == 1000:
+        #         graph_state["nodes"][count_i]["id"] = 402
+        #     count_i += 1
+        #
+        # for data_entry in graph_state["edges"]:
+        #     if data_entry["from_id"] == 1000 or data_entry["to_id"] == 1000:
+        #         del graph_state["edges"][count_j]
+        #     count_j += 1
 
         # print()
         # the following doesn't help with the weird location issue
@@ -177,9 +178,9 @@ def obtain_snapshots(graph_state_list, comm, output, num_scene_cameras=20, num_c
                 data = base64.b64decode(rgb_imgs[i])
                 ofs.write(data)
 
-            with open("{}/{}-{}-point_cloud.exr".format(output, frame_num, i), 'wb') as ofs:
-                data = base64.b64decode(point_cloud_imgs[i])
-                ofs.write(data)
+            # with open("{}/{}-{}-point_cloud.exr".format(output, frame_num, i), 'wb') as ofs:
+            #     data = base64.b64decode(point_cloud_imgs[i])
+            #     ofs.write(data)
 
             # with open("{}/{}-{}-seg_class.png".format(output, frame_num, i), 'wb') as ofs:
             #     data = base64.b64decode(seg_class_imgs[i])
