@@ -1827,7 +1827,7 @@
             "states": [
                 "PLUGGED_IN",
                 "CLEAN",
-                "ON"
+                "OFF"
             ],
             "prefab_name": null,
             "bounding_box": null
@@ -2936,7 +2936,7 @@
             "states": [
                 "PLUGGED_IN",
                 "CLEAN",
-                "ON"
+                "OFF"
             ],
             "prefab_name": null,
             "bounding_box": null
@@ -2952,7 +2952,7 @@
             "states": [
                 "PLUGGED_IN",
                 "CLEAN",
-                "ON"
+                "OFF"
             ],
             "prefab_name": null,
             "bounding_box": null

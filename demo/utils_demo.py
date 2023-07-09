@@ -1,4 +1,4 @@
-from mpl_toolkits import mplot3d
+# from mpl_toolkits import mplot3d
 import PIL
 import numpy as np
 import io
@@ -15,7 +15,7 @@ def setup():
     else:
         os.system('./linux_sim.x86_64')
 
-    from unity_simulator.comm_unity import UnityCommunication
+    from simulation.unity_simulator.comm_unity import UnityCommunication
     comm = UnityCommunication()
     return comm
 
@@ -27,6 +27,7 @@ def find_nodes(graph, **kwargs):
     else:
         k, v = next(iter(kwargs.items()))
         return [n for n in graph['nodes'] if n[k] == v]
+        # return [n for n in graph['nodes']]
 
 
 def find_edges_from(graph, id):

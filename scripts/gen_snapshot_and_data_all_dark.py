@@ -38,5 +38,6 @@ if __name__ == '__main__':
     for i in range(1):
         f = open("../graph_states/{}.json".format(i), )
         data = json.load(f)
+        comm.update_day_and_night(1)
         for j in range(4):
             obtain_snapshots_local(data, comm, output, i, j)
